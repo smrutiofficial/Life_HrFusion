@@ -1,0 +1,59 @@
+# version: "3.8"
+
+networks:
+  app-network:
+    driver: bridge
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "8001:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: server
+    env_file:
+      - ./server/.env
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+    volumes:
+      - ./server:/server
+    networks:
+      - app-network
+    restart: unless-stopped
+    command: npm run dev # Use your development command if you want hot-reloading
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: client
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+    volumes:
+      - ./client:/client/src/app
+    networks:
+      - app-network
+    restart: unless-stopped
+    command: npm run dev # Use your development command if you want hot-reloading
+
+volumes:
+  mongo-data:

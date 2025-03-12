@@ -1,0 +1,205 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2025-02-06T12:00:00.000Z",
+  "__export_source": "Insomnia",
+  "resources": [
+    {
+      "_type": "workspace",
+      "_id": "wrk_1",
+      "name": "HR Management API",
+      "description": "",
+      "scope": "collection"
+    },
+    {
+      "_type": "request_group",
+      "_id": "grp_users",
+      "parentId": "wrk_1",
+      "name": "User Management",
+      "description": ""
+    },
+    {
+      "_type": "request",
+      "_id": "req_register",
+      "parentId": "grp_users",
+      "name": "Register User",
+      "method": "POST",
+      "url": "{{ BASE_URL }}/users/register",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{ \"name\": \"John Doe\", \"email\": \"john@example.com\", \"password\": \"password123\" }"
+      }
+    },
+    {
+      "_type": "request",
+      "_id": "req_login",
+      "parentId": "grp_users",
+      "name": "Login User",
+      "method": "POST",
+      "url": "{{ BASE_URL }}/users/login",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{ \"email\": \"john@example.com\", \"password\": \"password123\" }"
+      }
+    },
+    {
+      "_type": "request",
+      "_id": "req_get_profile",
+      "parentId": "grp_users",
+      "name": "Get User Profile",
+      "method": "GET",
+      "url": "{{ BASE_URL }}/users/profile/{{ userId }}",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ token }}" }]
+    },
+    {
+      "_type": "request",
+      "_id": "req_update_user",
+      "parentId": "grp_users",
+      "name": "Update User",
+      "method": "PUT",
+      "url": "{{ BASE_URL }}/users/update/{{ userId }}",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ token }}" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{ \"name\": \"John Updated\" }"
+      }
+    },
+    {
+      "_type": "request_group",
+      "_id": "grp_departments",
+      "parentId": "wrk_1",
+      "name": "Department Management",
+      "description": ""
+    },
+    {
+      "_type": "request",
+      "_id": "req_add_department",
+      "parentId": "grp_departments",
+      "name": "Add Department",
+      "method": "POST",
+      "url": "{{ BASE_URL }}/departments/add",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ token }}" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{ \"name\": \"Engineering\" }"
+      }
+    },
+    {
+      "_type": "request",
+      "_id": "req_get_department",
+      "parentId": "grp_departments",
+      "name": "Get Department",
+      "method": "GET",
+      "url": "{{ BASE_URL }}/departments/{{ departmentId }}",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ token }}" }]
+    },
+    {
+      "_type": "request_group",
+      "_id": "grp_payroll",
+      "parentId": "wrk_1",
+      "name": "Payroll Management",
+      "description": ""
+    },
+    {
+      "_type": "request",
+      "_id": "req_add_payroll",
+      "parentId": "grp_payroll",
+      "name": "Add Payroll",
+      "method": "POST",
+      "url": "{{ BASE_URL }}/payroll/add",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ token }}" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{ \"userId\": \"{{ userId }}\", \"salary\": 5000 }"
+      }
+    },
+    {
+      "_type": "request",
+      "_id": "req_get_payroll",
+      "parentId": "grp_payroll",
+      "name": "Get Payroll",
+      "method": "GET",
+      "url": "{{ BASE_URL }}/payroll/{{ userId }}",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ token }}" }]
+    },
+    {
+      "_type": "request_group",
+      "_id": "grp_attendance",
+      "parentId": "wrk_1",
+      "name": "Attendance Management",
+      "description": ""
+    },
+    {
+      "_type": "request",
+      "_id": "req_mark_attendance",
+      "parentId": "grp_attendance",
+      "name": "Mark Attendance",
+      "method": "POST",
+      "url": "{{ BASE_URL }}/attendance/mark",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ token }}" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{ \"location\": \"37.7749,-122.4194\" }"
+      }
+    },
+    {
+      "_type": "request",
+      "_id": "req_get_attendance",
+      "parentId": "grp_attendance",
+      "name": "Get Attendance",
+      "method": "GET",
+      "url": "{{ BASE_URL }}/attendance/user/{{ userId }}",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ token }}" }]
+    },
+    {
+      "_type": "request_group",
+      "_id": "grp_leave",
+      "parentId": "wrk_1",
+      "name": "Leave Management",
+      "description": ""
+    },
+    {
+      "_type": "request",
+      "_id": "req_apply_leave",
+      "parentId": "grp_leave",
+      "name": "Apply for Leave",
+      "method": "POST",
+      "url": "{{ BASE_URL }}/leave/apply",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ token }}" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{ \"startDate\": \"2025-02-10\", \"endDate\": \"2025-02-15\", \"reason\": \"Vacation\" }"
+      }
+    },
+    {
+      "_type": "request_group",
+      "_id": "grp_notifications",
+      "parentId": "wrk_1",
+      "name": "Notification System",
+      "description": ""
+    },
+    {
+      "_type": "request",
+      "_id": "req_send_notification",
+      "parentId": "grp_notifications",
+      "name": "Send Notification",
+      "method": "POST",
+      "url": "{{ BASE_URL }}/notifications/send",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ token }}" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{ \"title\": \"Meeting Reminder\", \"message\": \"Team meeting at 3 PM\", \"recipientType\": \"all\" }"
+      }
+    },
+    {
+      "_type": "request",
+      "_id": "req_get_notifications",
+      "parentId": "grp_notifications",
+      "name": "Get Notifications",
+      "method": "GET",
+      "url": "{{ BASE_URL }}/notifications",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ token }}" }]
+    }
+  ]
+}
+
