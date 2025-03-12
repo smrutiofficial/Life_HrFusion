@@ -41,8 +41,8 @@ services:
 
   client:
     build:
-      context: ./client
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./client/Dockerfile
     container_name: client
     ports:
       - "3000:3000"
