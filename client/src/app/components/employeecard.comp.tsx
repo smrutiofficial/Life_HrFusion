@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { FaPhone, FaBuilding, FaEnvelope } from "react-icons/fa";
-
+import { MdDelete } from "react-icons/md";
+import { RiEdit2Fill } from "react-icons/ri";
 interface EmployeeCardProps {
   name: string;
   role: string;
@@ -21,7 +22,7 @@ const EmployeeCard: React.FC<EmployeeCardProps> = ({
   imageUrl,
 }) => {
   return (
-    <div className="relative bg-[#1E2133] text-white p-6 rounded-2xl border border-gray-700 w-[430px] shadow-lg flex flex-col gap-4">
+    <div className="relative bg-[#1E2133] text-white py-8 px-12 border border-gray-700 w-[444px] shadow-lg flex flex-col gap-4">
       {/* Header */}
       <div className="flex items-center gap-4">
         <div className="relative w-14 h-14 rounded-full overflow-hidden">
@@ -43,7 +44,7 @@ const EmployeeCard: React.FC<EmployeeCardProps> = ({
       </div>
 
       {/* Contact Info */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1 px-2">
         <div className="flex items-center gap-3 text-gray-400">
           <FaPhone className="text-[#897EEF]" />
           <span>{phone}</span>
@@ -59,10 +60,10 @@ const EmployeeCard: React.FC<EmployeeCardProps> = ({
       </div>
 
       {/* Buttons */}
-      <div className="flex justify-end items-center gap-4">
-        <button className="text-white border py-2 px-12 rounded-lg bg-[#363B58] border-gray-500">Edit</button>
-        <button className="bg-[#897EEF] text-white px-12 py-2 rounded-md">
-          Delete
+      <div className="flex justify-end pt-2 items-center gap-4">
+        <button className="text-white border py-2 w-[50%] rounded-lg bg-[#363B58] border-gray-500 flex gap-4 justify-center items-center"><RiEdit2Fill />Edit</button>
+        <button className="bg-[#897EEF] text-white w-[50%] py-2 rounded-md flex gap-4 justify-center items-center">
+        <MdDelete />Delete
         </button>
       </div>
     </div>

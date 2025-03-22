@@ -6,6 +6,7 @@ import Pdatacomp from "../components/pdata.comp";
 import Managementcomp from "../components/Management.comp";
 import Payrollcomp from "../components/Payroll.comp";
 import Notificationcomp from "../components/Notification.comp";
+import QuickLinks from "../components/quicklink.comp";
 
 const Dashboard = () => {
   return (
@@ -15,11 +16,11 @@ const Dashboard = () => {
           <div className="h-[55%]">
             {/* border */}
             <div className="flex w-full h-full">
-              <div className="w-[22%]">
+              <div className="w-[24%]">
                 {/* image */}
                 <Profilecomp />
               </div>
-              <div className="w-[78%]">
+              <div className="w-[76%]">
                 <div className="w-full h-full">
                   <div className="h-[35%] flex justify-center items-center ">
                     {/* border */}
@@ -29,7 +30,7 @@ const Dashboard = () => {
                   <div className="h-[66.5%]">
                     {/* border */}
                     <div className="flex w-full h-full">
-                      <div className="w-[65%] h-full ">
+                      <div className="w-[65%] h-[99%] overflow-hidden ">
                         {/* border */}
                         {/* profile buttons */}
                         <Profilebtns />
@@ -48,7 +49,7 @@ const Dashboard = () => {
             {/* border */}
             {/* bottom part */}
             <div className="flex w-full h-full">
-              <div className="w-[52%] h-full">
+              <div className="w-[45%] h-full">
                 {/* border */}
                 {/* bl-1st */}
                 <div className="w-full h-full flex items-center">
@@ -61,8 +62,10 @@ const Dashboard = () => {
                 {/* br-2nd */}
                 <Payrollcomp />
               </div>
-              <div className="w-[12%] h-full flex justify-center items-center">
-                <div className="bg-[#1D2135] border border-gray-400 w-full h-[94%] rounded-xl"></div>
+              <div className="w-[20%] mr-2.5 h-full flex justify-center items-center">
+                <div className="bg-[#1D2135] border border-gray-400 w-full h-[94%] rounded-xl">
+                <QuickLinks/>
+                </div>
               </div>
             </div>
           </div>

@@ -177,7 +177,7 @@ const Employee = () => {
         {/* employees ................---------------------------- */}
       
 
-        <div className="px-12 flex flex-row flex-wrap gap-8.5 py-8">
+        <div className="px-12 flex flex-row flex-wrap gap-4 py-4">
           {employees.map((employee, index) => (
             <EmployeeCard key={index} {...employee} />
           ))}
