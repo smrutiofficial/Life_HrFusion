@@ -1,15 +1,19 @@
 const User = require("../models/Users.model");
 const Profile = require("../models/Profile.model");
+const Payroll = require("../models/Payroll.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const { transporter } = require("../config/nodemailer");
-const { Verification_Email_Template, Welcome_Email_Template } = require("../middlewares/EmailTemplate.middleware");
+const {
+  Verification_Email_Template,
+  Welcome_Email_Template,
+} = require("../middlewares/EmailTemplate.middleware");
 
 dotenv.config();
 // Generate a 6-digit OTP
-const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
-
+const generateOtp = () =>
+  Math.floor(100000 + Math.random() * 900000).toString();
 
 // Send OTP Email
 const sendOtp = async (email, otp) => {
@@ -42,7 +46,9 @@ const verifyOtp = async (req, res) => {
     // Check if OTP matches and is not expired
     if (user.verifyOtp !== otp || Date.now() > user.verifyOtpExpireAt) {
       // await User.deleteOne({ email }); // ❌ Delete user if OTP is incorrect or expired
-      return res.status(400).json({ message: "Invalid OTP. Registration failed." });
+      return res
+        .status(400)
+        .json({ message: "Invalid OTP. Registration failed." });
     }
 
     // OTP is correct: Update user as verified
@@ -56,9 +62,10 @@ const verifyOtp = async (req, res) => {
       to: email,
       subject: "Welcome to Life Hrfusion!",
       // text: `Hi ${user.name},\n\nWelcome to Life Hrfusion! We’re excited to have you onboard.\n\nYour registration is successful, and you’re all set to explore.Your hrms id is ${user.userId}.`,
-      html: Welcome_Email_Template
-        .replace("{name}", user.name)
-        .replace("{userId}", user.userId),
+      html: Welcome_Email_Template.replace("{name}", user.name).replace(
+        "{userId}",
+        user.userId
+      ),
     };
 
     await transporter.sendMail(sendWelcomeEmail);
@@ -132,8 +139,6 @@ const verifyOtp = async (req, res) => {
 //   }
 // };
 
-
-
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -183,11 +188,29 @@ const registerUser = async (req, res) => {
 
     await profile.save();
 
-    res.status(201).json({
-      success: true,
-      message: "User registered successfully, profile created",
+    // **Automatically Create Payroll**
+    const payroll = new Payroll({
+      userId: user._id,
+      basicpay: 0,
+      bankac: "00000000000",
+      ifsc: "SBIN0000000",
+      allowances: [], // Empty array initially
+      deductions: [], // Empty array initially
+      ctc: 0,
+      epf: {
+        employeeContribution: 0,
+        employerContribution: 0,
+        uan: `UAN${Math.floor(100000 + Math.random() * 900000)}`, // Generate a random UAN
+      },
+      updatedAt: new Date(),
     });
 
+    await payroll.save();
+
+    res.status(201).json({
+      success: true,
+      message: "User registered successfully, profile and payroll created",
+    });
   } catch (error) {
     console.error("Error during user registration:", error);
     res.status(500).json({
@@ -204,7 +227,7 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log({email,password});
+    console.log({ email, password });
     const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ message: "Invalid email" });
 
@@ -245,7 +268,6 @@ const logoutUser = async (req, res) => {
     });
   }
 };
-
 
 // @desc Update user details
 // @route PUT /users/update/:userId

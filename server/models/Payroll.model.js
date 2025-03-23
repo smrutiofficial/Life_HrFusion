@@ -1,22 +1,27 @@
-const mongoose= require("mongoose");
+const mongoose = require("mongoose");
 
 const payrollSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, unique: true },
-  basicPay: { type: Number, required: true },
-  payScale: { type: String, required: true },
-
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+    unique: true,
+  },
+  basicpay: { type: Number, required: true, default: 0 },
+  bankac: { type: String, required: true, default: "00000000000" },
+  ifsc: { type: String, required: true ,default: "SBIN0000000"},
   allowances: [
     {
       type: { type: String, required: true },
-      amount: { type: Number, required: true }
-    }
+      amount: { type: Number, required: true },
+    },
   ],
 
   deductions: [
     {
       type: { type: String, required: true },
-      amount: { type: Number, required: true }
-    }
+      amount: { type: Number, required: true },
+    },
   ],
 
   ctc: { type: Number, required: true },
@@ -24,10 +29,10 @@ const payrollSchema = new mongoose.Schema({
   epf: {
     employeeContribution: { type: Number, required: true },
     employerContribution: { type: Number, required: true },
-    uan: { type: String, required: true, unique: true }
+    uan: { type: String, required: true, unique: true },
   },
 
-  updatedAt: { type: Date, default: Date.now }
+  updatedAt: { type: Date, default: Date.now },
 });
 
-module.exports=mongoose.model("Payroll", payrollSchema);
+module.exports = mongoose.model("Payroll", payrollSchema);
