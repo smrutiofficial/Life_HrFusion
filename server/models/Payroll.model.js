@@ -29,7 +29,7 @@ const payrollSchema = new mongoose.Schema({
   epf: {
     employeeContribution: { type: Number, required: true },
     employerContribution: { type: Number, required: true },
-    uan: { type: String, required: true, unique: true },
+    uan: { type: String, unique: true },
   },
 
   updatedAt: { type: Date, default: Date.now },

@@ -17,7 +17,6 @@ app.use(cookieParser());
 app.use(cors());
 // Routes
 app.use("/user/", require("./routers/Users.route.js"));
-app.use("/department/", require("./routers/Department.route.js"));
 app.use("/payroll/", require("./routers/Payroll.route.js"));
 app.use("/leave/", require("./routers/leave.route.js"));
 app.use("/notification/", require("./routers/Notification.route.js"));

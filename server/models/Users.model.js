@@ -7,7 +7,11 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String, required: true },
     avatar: { type: String }, // Profile Image URL
-    role: {  type: String ,default: "employee"},
+    role: {
+      type: String,
+      enum: ["admin", "hr", "employee"],
+      default: "employee",
+    },
     profile: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Profile",

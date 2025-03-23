@@ -175,15 +175,15 @@ const registerUser = async (req, res) => {
     // **Automatically Create Profile**
     const profile = new Profile({
       userId: user._id, // Reference to User model
-      position: "Not Set", // Default values, user can update later
+      position: "Not Set",
       department: "Not Set",
       joinedDate: new Date(),
-      contactNumber: "Not Set", // Empty string instead of missing value
-      dateOfBirth: null, // Allow null if unknown
+      contactNumber: "Not Set",
+      dateOfBirth: null,
       gender: "Other",
       maritalStatus: "Single",
-      aadharCard: "Not Set", // Empty string instead of missing value
-      panCard: "Not Set", // Empty string instead of missing value
+      aadharCard: "Not Set",
+      panCard: "Not Set",
     });
 
     await profile.save();
