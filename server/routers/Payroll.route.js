@@ -13,8 +13,8 @@ const router = express.Router();
 
 // Protected Routes
 router.post("/add",authenticate, authorize(["admin", "HR"]), addPayroll);
-router.get("/:userId", authenticate, authorize(["admin", "HR"]), getPayroll);
-router.put("/update/:userId", authenticate, authorize(["admin", "HR"]), updatePayroll);
+router.get("/:userId", getPayroll);
+router.put("/update/:userId", updatePayroll);
 router.delete("/delete/:userId", authenticate, authorize(["admin"]), deletePayroll);
 router.get("/all", authenticate, authorize(["admin", "HR"]), getAllPayrolls);
 router.post("/process/:payrollId", authenticate, authorize(["admin"]), processPayroll);

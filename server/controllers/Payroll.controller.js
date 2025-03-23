@@ -40,27 +40,85 @@ const addPayroll = async (req, res) => {
 // @desc Get payroll details for a specific employee
 // @route GET /payroll/:userId
 // @access Private (Admin/HR)
+// const getPayroll = async (req, res) => {
+//   try {
+//     const payroll = await Payroll.findOne({ userId: req.params.userId }).populate("userId", "name email position");
+//     if (!payroll) return res.status(404).json({ message: "Payroll details not found" });
+
+//     res.json(payroll);
+//   } catch (error) {
+//     res.status(500).json({ message: "Server Error", error: error.message });
+//   }
+// };
+
+
+// const getPayroll = async (req, res) => {
+//   try {
+//     const payroll = await Payroll.findOne({ userId: req.params.userId })
+//       .populate({
+//         path: "userId",
+//         select: "name email",
+//       })
+//       .populate({
+//         path: "userId",
+//         populate: {
+//           path: "profile",
+//           select: "position department joinedDate contactNumber dateOfBirth gender",
+//         },
+//       });
+
+//     if (!payroll) return res.status(404).json({ message: "Payroll details not found" });
+
+//     res.json(payroll);
+//   } catch (error) {
+//     res.status(500).json({ message: "Server Error", error: error.message });
+//   }
+// };
+
+
+
+
+
 const getPayroll = async (req, res) => {
   try {
-    const payroll = await Payroll.findOne({ userId: req.params.userId }).populate("userId", "name email position");
+    const payroll = await Payroll.findOne({ userId: req.params.userId })
+      .populate({
+        path: "userId",
+        select: "name email",
+      })
+      .populate({
+        path: "userId",
+        populate: {
+          path: "profile",
+          select: "position department joinedDate contactNumber dateOfBirth gender",
+        },
+      });
+
     if (!payroll) return res.status(404).json({ message: "Payroll details not found" });
 
-    res.json(payroll);
+    // Rename userId to userProfile in the response
+    const payrollData = payroll.toObject(); // Convert Mongoose document to plain object
+    payrollData.userProfile = payrollData.userId; // Rename userId to userProfile
+    delete payrollData.userId; // Remove the old key
+
+    res.json(payrollData);
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
+
+
 
 // @desc Update payroll details for an employee
 // @route PUT /payroll/update/:userId
 // @access Private (Admin/HR)
 const updatePayroll = async (req, res) => {
   try {
-    const { basicPay, allowances, deductions, ctc, epf, gradePay } = req.body;
+    const { basicpay, allowances, deductions, ctc, epf, gradePay,bankac,ifsc } = req.body;
 
     const updatedPayroll = await Payroll.findOneAndUpdate(
       { userId: req.params.userId },
-      { basicPay, allowances, deductions, ctc, epf, gradePay },
+      { basicpay, allowances, deductions, ctc, epf, gradePay,bankac,ifsc },
       { new: true }
     );
 

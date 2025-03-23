@@ -12,6 +12,7 @@ const ProfileSchema = new mongoose.Schema(
     department: { type: String, required: true },
     joinedDate: { type: Date, required: true },
     contactNumber: { type: String, required: true },
+    experience: { type: Number, required: true, default: 0 },
     dateOfBirth: { type: Date },
     gender: { type: String, enum: ["Male", "Female", "Other"], required: true },
     maritalStatus: {
