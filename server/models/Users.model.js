@@ -6,15 +6,12 @@ const userSchema = new mongoose.Schema(
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String, required: true },
-    role: {
-      type: String,
-      enum: ["employee", "HR", "admin"],
-      default: "employee",
-    },
-    position: { type: String, required: true },
-    dateOfJoining: {type:String},
     avatar: { type: String }, // Profile Image URL
-    status: { type: String, enum: ["active", "inactive"], default: "active" }, // Active or Inactive user
+    role: {  type: String ,default: "employee"},
+    profile: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Profile",
+    },
     // ---------------------------------------------
     emailVerified: { type: Boolean, default: false }, // Email Verification Status
     verifyOtp: { type: String, default: "" }, // OTP for email verification

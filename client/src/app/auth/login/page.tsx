@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import axios from "axios";
 // import Bg from "../../image/work.png";
-import Image from "next/image";
+// import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {backend_link} from "@/app/constants/constant";
@@ -14,11 +14,23 @@ export default function Login() {
   const [error, setError] = useState("");
   const router = useRouter();
 
+  // Redirect if token exists
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
+      if (token) {
+        router.push("/");
+      }
+    }
+  }, [router]);
+
+
   const handleLogin = async (e: React.FormEvent) => {
+    
     e.preventDefault();
     try {
       const response = await axios.post(
-        `${backend_link}/api/auth/login`,
+        `${backend_link}/user/login`,
         { email, password }
       );
       localStorage.setItem("token", response.data.token);
@@ -35,7 +47,7 @@ export default function Login() {
         <div className="flex flex-row">
           <div className="w-1/2 h-[100vh] overflow-hidden bg-[#10121f] flex justify-center items-center">
             {/* image  */}
-            <Image src="" alt="bg-image" className="h-full w-full object-cover"></Image>
+            {/* <Image src="" alt="bg-image" className="h-full w-full object-cover"></Image> */}
           </div>
           <div className="w-1/2 flex flex-col justify-center bg-[#1D2135]">
             <div className="flex flex-col items-center">

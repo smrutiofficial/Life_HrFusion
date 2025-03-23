@@ -1,9 +1,10 @@
 const User = require("../models/Users.model");
+const Profile = require("../models/Profile.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const { transporter } = require("../config/nodemailer");
-const { Verification_Email_Template,Welcome_Email_Template } = require("../middlewares/EmailTemplate.middleware");
+const { Verification_Email_Template, Welcome_Email_Template } = require("../middlewares/EmailTemplate.middleware");
 
 dotenv.config();
 // Generate a 6-digit OTP
@@ -17,7 +18,7 @@ const sendOtp = async (email, otp) => {
     to: email,
     subject: "Email Verification OTP",
     text: `Your OTP for verification is: ${otp}. It expires in 5 minutes.`,
-    html: Verification_Email_Template.replace("{verificationCode}",otp),
+    html: Verification_Email_Template.replace("{verificationCode}", otp),
   };
 
   try {
@@ -49,17 +50,17 @@ const verifyOtp = async (req, res) => {
     user.verifyOtp = "";
     user.verifyOtpExpireAt = 0;
     user.isAccountVerified = true;
-    
+
     const sendWelcomeEmail = {
       from: `Life Hrfusion <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Welcome to Life Hrfusion!",
       // text: `Hi ${user.name},\n\nWelcome to Life Hrfusion! We’re excited to have you onboard.\n\nYour registration is successful, and you’re all set to explore.Your hrms id is ${user.userId}.`,
-      html:Welcome_Email_Template
+      html: Welcome_Email_Template
         .replace("{name}", user.name)
         .replace("{userId}", user.userId),
     };
-    
+
     await transporter.sendMail(sendWelcomeEmail);
     await user.save();
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
@@ -82,37 +83,83 @@ const verifyOtp = async (req, res) => {
 // @desc Register a new user
 // @route POST /users/register
 // @access Public
+// const registerUser = async (req, res) => {
+//   try {
+//     const { name, email, password } = req.body;
+
+//     const generateUserId = () => {
+//       const id = 7000000 + Math.floor(Math.random() * 1000000);
+//       // console.log("Generated User ID:", id); // Debugging log
+//       return id;
+//     };
+//     // Check if the user already exists
+//     const existingUser = await User.findOne({ email });
+//     if (existingUser)
+//       return res.status(400).json({ message: "User already exists" });
+
+//     // Hash the password
+//     const hashedPassword = await bcrypt.hash(password, 6);
+
+//     // Explicitly generate a userId
+//     const userId = generateUserId();
+
+//     const otp = generateOtp();
+//     const otpExpireTime = Date.now() + 5 * 60 * 1000; // OTP expires in 5 minutes
+
+//     // Create a new user
+//     const user = new User({
+//       userId, // Assign userId explicitly
+//       name,
+//       email,
+//       password: hashedPassword,
+//       verifyOtp: otp,
+//       verifyOtpExpireAt: otpExpireTime,
+//     });
+
+//     await user.save();
+//     await sendOtp(email, otp);
+
+//     res
+//       .status(201)
+//       .json({ success: true, message: "User registered successfully" });
+//   } catch (error) {
+//     console.error("Error during user registration:", error); // Log the error for debugging
+//     res.status(500).json({
+//       success: false,
+//       message: "Server Error",
+//       error: error.message,
+//     });
+//   }
+// };
+
+
+
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, role, department, position } = req.body;
+    const { name, email, password } = req.body;
 
     const generateUserId = () => {
-      const id = 7000000 + Math.floor(Math.random() * 1000000);
-      // console.log("Generated User ID:", id); // Debugging log
-      return id;
+      return 7000000 + Math.floor(Math.random() * 1000000);
     };
+
     // Check if the user already exists
     const existingUser = await User.findOne({ email });
-    if (existingUser)
+    if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
+    }
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 6);
-
-    // Explicitly generate a userId
     const userId = generateUserId();
-    
     const otp = generateOtp();
     const otpExpireTime = Date.now() + 5 * 60 * 1000; // OTP expires in 5 minutes
 
     // Create a new user
     const user = new User({
-      userId, // Assign userId explicitly
+      userId,
       name,
       email,
       password: hashedPassword,
-      role,
-      position,
       verifyOtp: otp,
       verifyOtpExpireAt: otpExpireTime,
     });
@@ -120,11 +167,29 @@ const registerUser = async (req, res) => {
     await user.save();
     await sendOtp(email, otp);
 
-    res
-      .status(201)
-      .json({ success: true, message: "User registered successfully" });
+    // **Automatically Create Profile**
+    const profile = new Profile({
+      userId: user._id, // Reference to User model
+      position: "Not Set", // Default values, user can update later
+      department: "Not Set",
+      joinedDate: new Date(),
+      contactNumber: "Not Set", // Empty string instead of missing value
+      dateOfBirth: null, // Allow null if unknown
+      gender: "Other",
+      maritalStatus: "Single",
+      aadharCard: "Not Set", // Empty string instead of missing value
+      panCard: "Not Set", // Empty string instead of missing value
+    });
+
+    await profile.save();
+
+    res.status(201).json({
+      success: true,
+      message: "User registered successfully, profile created",
+    });
+
   } catch (error) {
-    console.error("Error during user registration:", error); // Log the error for debugging
+    console.error("Error during user registration:", error);
     res.status(500).json({
       success: false,
       message: "Server Error",
@@ -139,7 +204,7 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-
+    console.log({email,password});
     const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ message: "Invalid email" });
 
@@ -181,19 +246,6 @@ const logoutUser = async (req, res) => {
   }
 };
 
-// @desc Get user profile
-// @route GET /users/profile/:userId
-// @access Private
-const getUserProfile = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.userId).select("-password");
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    res.json(user);
-  } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
-  }
-};
 
 // @desc Update user details
 // @route PUT /users/update/:userId
@@ -292,7 +344,6 @@ module.exports = {
   verifyOtp,
   loginUser,
   logoutUser,
-  getUserProfile,
   updateUser,
   deleteUser,
   getAllUsers,

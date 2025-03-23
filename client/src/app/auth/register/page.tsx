@@ -4,7 +4,7 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import axios from "axios";
 // import { useRouter } from 'next/router';
 // import Bg from "../../image/berny-transformed.png";
-import Image from "next/image";
+// import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { backend_link } from "@/app/constants/constant";
@@ -27,6 +27,16 @@ export default function Register() {
   const router = useRouter();
   // const searchParams = useSearchParams();
 
+  // Redirect if token exists
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
+      if (token) {
+        router.push("/");
+      }
+    }
+  }, [router]);
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     const { name, email, password } = formData;
@@ -38,10 +48,19 @@ export default function Register() {
     }
 
     try {
-      await axios.post(`${backend_link}/api/auth/register`, {
-        name,
-        email,
-      });
+      await axios.post(
+        `${backend_link}/user/register`,
+        {
+          name,
+          email,
+          password,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       setOtp("flex");
       // localStorage.setItem("token", res.data.token);
       // router.push("/auth/login");
@@ -62,11 +81,9 @@ export default function Register() {
     }
 
     try {
-      await axios.post(`${backend_link}/api/auth/register/complete`, {
-        name,
+      await axios.post(`${backend_link}/user/verify-otp`, {
         email,
         otp: otpString,
-        password,
       });
       setOtp("hidden");
       router.push("/auth/login");
@@ -146,11 +163,11 @@ export default function Register() {
         <div className="flex flex-row text-white">
           <div className="w-1/2 h-[100vh] overflow-hiddenflex justify-center items-center">
             {/* image  */}
-            <Image
+            {/* <Image
               src=""
               alt="bg-image"
               className="w-full h-full object-cover"
-            ></Image>
+            ></Image> */}
           </div>
 
           <div className="w-1/2 flex flex-col justify-center  bg-[#1D2135] relative">

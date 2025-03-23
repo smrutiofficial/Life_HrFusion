@@ -4,7 +4,6 @@ const {
   verifyOtp,
   loginUser,
   logoutUser,
-  getUserProfile,
   updateUser,
   deleteUser,
   getAllUsers,
@@ -24,7 +23,6 @@ router.post("/reset-password", requestPasswordReset);
 router.post("/verify-email", verifyEmail);
 
 // Protected Routes
-router.get("/profile/:userId", authenticate, getUserProfile);
 router.put("/update/:userId", authenticate, updateUser);
 router.delete("/delete/:userId", authenticate, authorize(["admin"]), deleteUser);
 router.get("/all", authenticate, authorize(["admin"]), getAllUsers);

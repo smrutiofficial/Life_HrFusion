@@ -15,12 +15,6 @@ services:
     networks:
       - app-network
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   server:
     build:
       context: ./server
@@ -41,15 +35,18 @@ services:
 
   client:
     build:
-      context: .
-      dockerfile: ./client/Dockerfile
+      context: ./client
+      dockerfile: ./docker/development/Dockerfile
     container_name: client
     ports:
       - "3000:3000"
     depends_on:
       - server
     volumes:
-      - ./client:/client/src/app
+      - ./client:/app
+      - /app/node_modules
+    env_file:
+      - ./client/.env
     networks:
       - app-network
     restart: unless-stopped

@@ -4,8 +4,15 @@ import Selfimg from "../../images/selfpngbg.jpg";
 import cr from "../../images/cr.svg";
 import Link from "next/link";
 import { BiLogOut } from "react-icons/bi";
+import { useRouter } from "next/navigation";
 
 const Profilecomp = () => {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // Remove token from localStorage
+    router.push("/auth/login"); // Redirect to login page
+  };
   return (
     <div className="w-full h-full flex justify-center items-center pr-3 pb-3 mt-1.5">
       <div className="w-full h-full bg-[#1D2135] border border-gray-400 rounded-xl relative overflow-hidden">
@@ -13,7 +20,7 @@ const Profilecomp = () => {
           {/* <Image alt="" src={Selfimg}></Image> */}
           <div className="py-4 px-8 flex justify-between items-center">
             <p className="text-lg font-semibold text-gray-400 ">Profile</p>
-            <button className="px-4 py-1.5 flex gap-4 justify-center items-center rounded-md bg-[#eb6b6b24] text-[#EB6B6B] cursor-pointer">
+            <button className="px-4 py-1.5 flex gap-4 justify-center items-center rounded-md bg-[#eb6b6b24] text-[#EB6B6B] cursor-pointer" onClick={handleLogout}>
               <BiLogOut className="text-xl" /><p>logout</p>
             </button>
           </div>
