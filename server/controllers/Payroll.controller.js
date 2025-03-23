@@ -130,6 +130,45 @@ const updatePayroll = async (req, res) => {
   }
 };
 
+
+// update add new item in allowence
+const addAllowance = async (req, res) => {
+  try {
+    const { type, amount } = req.body;
+
+    const updatedPayroll = await Payroll.findOneAndUpdate(
+      { userId: req.params.userId },
+      { $push: { allowances: { type, amount } } },
+      { new: true }
+    );
+
+    if (!updatedPayroll) return res.status(404).json({ message: "Payroll details not found" });
+
+    res.json({ message: "Allowance added successfully", updatedPayroll });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};
+// update add new item in allowence
+const addDeduction = async (req, res) => {
+  try {
+    const { type, amount } = req.body;
+
+    const updatedPayroll = await Payroll.findOneAndUpdate(
+      { userId: req.params.userId },
+      { $push: { deductions: { type, amount } } },
+      { new: true }
+    );
+
+    if (!updatedPayroll) return res.status(404).json({ message: "Payroll details not found" });
+
+    res.json({ message: "Deduction added successfully", updatedPayroll });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};
+
+
 // @desc Remove payroll details
 // @route DELETE /payroll/delete/:userId
 // @access Private (Admin)
@@ -178,6 +217,8 @@ const processPayroll = async (req, res) => {
 module.exports= {
   addPayroll,
   getPayroll,
+  addAllowance,
+  addDeduction,
   updatePayroll,
   deletePayroll,
   getAllPayrolls,
