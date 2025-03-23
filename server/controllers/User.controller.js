@@ -1,6 +1,8 @@
 const User = require("../models/Users.model");
 const Profile = require("../models/Profile.model");
 const Payroll = require("../models/Payroll.model");
+const Attendance = require("../models/Attendance.model");
+const Leave = require("../models/Leave.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
@@ -171,7 +173,7 @@ const registerUser = async (req, res) => {
 
     await user.save();
     await sendOtp(email, otp);
-
+    // ---------------------------------------------------------
     // **Automatically Create Profile**
     const profile = new Profile({
       userId: user._id, // Reference to User model
@@ -187,7 +189,7 @@ const registerUser = async (req, res) => {
     });
 
     await profile.save();
-
+    // -------------------------------------------------
     // **Automatically Create Payroll**
     const payroll = new Payroll({
       userId: user._id,
@@ -206,10 +208,38 @@ const registerUser = async (req, res) => {
     });
 
     await payroll.save();
+    // -------------------------------------------------------
+    // **Automatically Create Attendance**
+    const attendance = new Attendance({
+      userId: user._id,
+      date: new Date(),
+      checkIn: new Date(),
+      checkOut: null, // No check-out by default
+      location: {
+        latitude: 0.0, // Default location (update later)
+        longitude: 0.0,
+      },
+      status: "Present",
+    });
 
+    await attendance.save();
+    // ---------------------------------------------------------
+    // **Automatically Create Leave Record (Default)**
+    const leave = new Leave({
+      userId: user._id,
+      leaveType: "Casual", // Default leave type
+      startDate: new Date(),
+      endDate: new Date(),
+      reason: "Default Leave Record",
+      status: "Pending",
+    });
+
+    await leave.save();
+    // ----------------------------------------------
     res.status(201).json({
       success: true,
-      message: "User registered successfully, profile and payroll created",
+      message:
+        "User registered successfully. Profile, Payroll, Attendance, and Leave records created.",
     });
   } catch (error) {
     console.error("Error during user registration:", error);
