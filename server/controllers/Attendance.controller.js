@@ -1,107 +1,137 @@
-const Attendance = require("../models/Attendance.model.js");
-const User = require("../models/Users.model.js");
+const Attendance = require("../models/Attendance.model");
+const User = require("../models/Users.model");
+const Profile = require("../models/Profile.model");
 
-// @desc Mark attendance (uses precise GPS location)
-// @route POST /attendance/mark
-// @access Private (Employee)
-const markAttendance = async (req, res) => {
+// Get attendance by userId with User and Profile details
+const getAttendanceById = async (req, res) => {
   try {
-    const { userId, latitude, longitude, status } = req.body;
+    const { userId } = req.params;
 
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const attendance = await Attendance.findOne({ userId })
+      .populate({ path: "userId", select: "name email", model: User })
+      .populate({
+        path: "userId",
+        populate: { path: "profile", model: Profile },
+      });
 
-    const today = new Date().toISOString().split("T")[0]; // Get today's date
-    const existingAttendance = await Attendance.findOne({ userId, date: today });
-
-    if (existingAttendance) {
-      return res.status(400).json({ message: "Attendance already marked for today" });
+    if (!attendance) {
+      return res.status(404).json({ message: "Attendance record not found" });
     }
 
-    const attendance = await Attendance.create({
-      userId,
-      date: new Date(),
-      status: status || "present",
-      location: { latitude, longitude },
-    });
-
-    res.status(201).json({ message: "Attendance marked successfully", attendance });
+    res.status(200).json(attendance);
   } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
-// @desc Get attendance records for a user
-// @route GET /attendance/user/:userId
-// @access Private (Employee, HR, Admin)
-const getUserAttendance = async (req, res) => {
+// Get today's attendance by userId
+const getTodayAttendanceById = async (req, res) => {
   try {
-    const attendanceRecords = await Attendance.find({ userId: req.params.userId }).sort({ date: -1 });
+    const { userId } = req.params;
+    const today = new Date().toISOString().split("T")[0];
 
-    if (!attendanceRecords.length) {
-      return res.status(404).json({ message: "No attendance records found for this user" });
+    const attendance = await Attendance.findOne({ userId })
+      .populate({ path: "userId", select: "name email", model: User })
+      .populate({
+        path: "userId",
+        populate: { path: "profile", model: Profile },
+      });
+
+    if (!attendance) {
+      return res.status(404).json({ message: "Attendance record not found" });
     }
 
-    res.json(attendanceRecords);
+    const record = attendance.attendance.find(
+      (record) => record.date.toISOString().split("T")[0] === today
+    );
+    if (!record) {
+      return res
+        .status(404)
+        .json({ message: "No attendance record found for today" });
+    }
+
+    res.status(200).json(record);
   } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
-// @desc Get attendance records for all employees
-// @route GET /attendance/all
-// @access Private (HR, Admin)
-const getAllAttendance = async (req, res) => {
+// Update check-in time, location, and set status to 'Present' for the current date
+const updateCheckIn = async (req, res) => {
   try {
-    const attendanceRecords = await Attendance.find().populate("userId", "name email position").sort({ date: -1 });
+    const { userId } = req.params;
+    const { checkIn, location } = req.body; // No checkOut here
+    const today = new Date().toISOString().split("T")[0];
 
-    res.json(attendanceRecords);
-  } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
-  }
-};
+    let attendance = await Attendance.findOne({ userId });
+    if (!attendance) {
+      attendance = new Attendance({ userId, attendance: [] });
+    }
 
-// @desc Update attendance details
-// @route PUT /attendance/update/:attendanceId
-// @access Private (Admin, HR)
-const updateAttendance = async (req, res) => {
-  try {
-    const { status, latitude, longitude } = req.body;
-
-    const updatedAttendance = await Attendance.findByIdAndUpdate(
-      req.params.attendanceId,
-      { status, location: { latitude, longitude } },
-      { new: true }
+    let record = attendance.attendance.find(
+      (record) => record.date.toISOString().split("T")[0] === today
     );
 
-    if (!updatedAttendance) return res.status(404).json({ message: "Attendance record not found" });
+    if (!record) {
+      record = {
+        date: new Date(),
+        checkIn,
+        location,
+        status: "Present",
+        checkOut: null, // Default checkOut value
+      };
+      attendance.attendance.push(record);
+    } else {
+      record.checkIn = checkIn;
+      record.location = location;
+      record.status = "Present";
+      record.checkOut = null;
+    }
 
-    res.json({ message: "Attendance updated successfully", updatedAttendance });
+    await attendance.save();
+    res
+      .status(200)
+      .json({ message: "Check-in time updated successfully", attendance });
   } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
-// @desc Remove an attendance record
-// @route DELETE /attendance/delete/:attendanceId
-// @access Private (Admin)
-const deleteAttendance = async (req, res) => {
+// Update check-out time for the current date
+const updateCheckOut = async (req, res) => {
   try {
-    const deletedAttendance = await Attendance.findByIdAndDelete(req.params.attendanceId);
+    const { userId } = req.params;
+    const { checkOut } = req.body;
+    const today = new Date().toISOString().split("T")[0];
 
-    if (!deletedAttendance) return res.status(404).json({ message: "Attendance record not found" });
+    const attendance = await Attendance.findOne({ userId });
+    if (!attendance) {
+      return res.status(404).json({ message: "Attendance record not found" });
+    }
 
-    res.json({ message: "Attendance record deleted successfully" });
+    const record = attendance.attendance.find(
+      (record) => record.date.toISOString().split("T")[0] === today
+    );
+    if (!record) {
+      return res
+        .status(404)
+        .json({ message: "No attendance record found for today" });
+    }
+
+    record.checkOut = checkOut;
+
+    await attendance.save();
+    res
+      .status(200)
+      .json({ message: "Check-out time updated successfully", attendance });
   } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
-
-module.exports={
-  markAttendance,
-  getUserAttendance,
-  getAllAttendance,
-  updateAttendance,
-  deleteAttendance
-}
+module.exports = {
+  getAttendanceById,
+  getTodayAttendanceById,
+  updateCheckIn,
+  updateCheckOut,
+};

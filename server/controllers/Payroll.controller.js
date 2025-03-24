@@ -1,128 +1,70 @@
-const Payroll =require("../models/Payroll.model.js");
-const User =require("../models/Users.model.js");
+const Payroll = require("../models/Payroll.model.js");
+const User = require("../models/Users.model.js");
+const Profile = require("../models/Profile.model.js");
 
-// @desc Add payroll details for an employee
-// @route POST /payroll/add
-// @access Private (Admin/HR)
-const addPayroll = async (req, res) => {
-  try {
-    const { userId, basicPay,payScale, allowances, deductions, ctc, epf } = req.body;
-
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    // Check if payroll exists for user
-    const existingPayroll = await Payroll.findOne({ userId });
-    if (existingPayroll) {
-      return res.status(400).json({ message: "Payroll already exists for this user" });
-    }
-
-    const payroll = await Payroll.create({
-      userId,
-      basicPay,
-      payScale,
-      allowances,
-      deductions,
-      ctc,
-      epf,
-      status: "pending",
-    });
-
-    user.salaryDetails = payroll._id;
-    await user.save();
-
-    res.status(201).json({ message: "Payroll added successfully", payroll });
-  } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
-  }
-};
-
-// @desc Get payroll details for a specific employee
+// @desc Get payroll details for a user
 // @route GET /payroll/:userId
 // @access Private (Admin/HR)
-// const getPayroll = async (req, res) => {
-//   try {
-//     const payroll = await Payroll.findOne({ userId: req.params.userId }).populate("userId", "name email position");
-//     if (!payroll) return res.status(404).json({ message: "Payroll details not found" });
-
-//     res.json(payroll);
-//   } catch (error) {
-//     res.status(500).json({ message: "Server Error", error: error.message });
-//   }
-// };
-
-
-// const getPayroll = async (req, res) => {
-//   try {
-//     const payroll = await Payroll.findOne({ userId: req.params.userId })
-//       .populate({
-//         path: "userId",
-//         select: "name email",
-//       })
-//       .populate({
-//         path: "userId",
-//         populate: {
-//           path: "profile",
-//           select: "position department joinedDate contactNumber dateOfBirth gender",
-//         },
-//       });
-
-//     if (!payroll) return res.status(404).json({ message: "Payroll details not found" });
-
-//     res.json(payroll);
-//   } catch (error) {
-//     res.status(500).json({ message: "Server Error", error: error.message });
-//   }
-// };
-
-
-
-
-
 const getPayroll = async (req, res) => {
   try {
-    const payroll = await Payroll.findOne({ userId: req.params.userId })
-      .populate({
-        path: "userId",
-        select: "name email",
-      })
-      .populate({
-        path: "userId",
-        populate: {
-          path: "profile",
-          select: "position department joinedDate contactNumber dateOfBirth gender",
-        },
-      });
+    const payroll = await Payroll.findOne({
+      userId: req.params.userId,
+    }).populate({
+      path: "userId",
+      select: "name email",
+      populate: {
+        path: "profile",
+        select:
+          "position department joinedDate contactNumber dateOfBirth gender",
+      },
+    });
 
-    if (!payroll) return res.status(404).json({ message: "Payroll details not found" });
+    if (!payroll)
+      return res.status(404).json({ message: "Payroll details not found" });
 
-    // Rename userId to userProfile in the response
-    const payrollData = payroll.toObject(); // Convert Mongoose document to plain object
-    payrollData.userProfile = payrollData.userId; // Rename userId to userProfile
-    delete payrollData.userId; // Remove the old key
-
-    res.json(payrollData);
+    res.json(payroll);
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
 
+// @desc Get all payroll details with user and profile data
+// @route GET /payroll/all
+// @access Private (Admin/HR)
+const getAllPayrolls = async (req, res) => {
+  try {
+    const payrolls = await Payroll.find().populate({
+      path: "userId",
+      select: "name email",
+      populate: {
+        path: "profile",
+        select:
+          "position department joinedDate contactNumber dateOfBirth gender",
+      },
+    });
 
+    res.json(payrolls);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};
 
-// @desc Update payroll details for an employee
+// @desc Update payroll details
 // @route PUT /payroll/update/:userId
 // @access Private (Admin/HR)
 const updatePayroll = async (req, res) => {
   try {
-    const { basicpay, allowances, deductions, ctc, epf, gradePay,bankac,ifsc } = req.body;
+    const { basicpay, allowances, deductions, ctc, epf, bankac, ifsc } =
+      req.body;
 
     const updatedPayroll = await Payroll.findOneAndUpdate(
       { userId: req.params.userId },
-      { basicpay, allowances, deductions, ctc, epf, gradePay,bankac,ifsc },
+      { basicpay, allowances, deductions, ctc, epf, bankac, ifsc },
       { new: true }
     );
 
-    if (!updatedPayroll) return res.status(404).json({ message: "Payroll details not found" });
+    if (!updatedPayroll)
+      return res.status(404).json({ message: "Payroll details not found" });
 
     res.json({ message: "Payroll updated successfully", updatedPayroll });
   } catch (error) {
@@ -130,8 +72,9 @@ const updatePayroll = async (req, res) => {
   }
 };
 
-
-// update add new item in allowence
+// @desc Add a new allowance
+// @route POST /payroll/:userId/allowance
+// @access Private (Admin/HR)
 const addAllowance = async (req, res) => {
   try {
     const { type, amount } = req.body;
@@ -142,14 +85,18 @@ const addAllowance = async (req, res) => {
       { new: true }
     );
 
-    if (!updatedPayroll) return res.status(404).json({ message: "Payroll details not found" });
+    if (!updatedPayroll)
+      return res.status(404).json({ message: "Payroll details not found" });
 
     res.json({ message: "Allowance added successfully", updatedPayroll });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
-// update add new item in allowence
+
+// @desc Add a new deduction
+// @route POST /payroll/:userId/deduction
+// @access Private (Admin/HR)
 const addDeduction = async (req, res) => {
   try {
     const { type, amount } = req.body;
@@ -160,7 +107,8 @@ const addDeduction = async (req, res) => {
       { new: true }
     );
 
-    if (!updatedPayroll) return res.status(404).json({ message: "Payroll details not found" });
+    if (!updatedPayroll)
+      return res.status(404).json({ message: "Payroll details not found" });
 
     res.json({ message: "Deduction added successfully", updatedPayroll });
   } catch (error) {
@@ -169,58 +117,117 @@ const addDeduction = async (req, res) => {
 };
 
 
-// @desc Remove payroll details
-// @route DELETE /payroll/delete/:userId
-// @access Private (Admin)
-const deletePayroll = async (req, res) => {
+// @desc    Update an existing allowance for a user
+// @route   PATCH /payroll/allowance/:userId/:allowanceId
+// @access  Private
+
+const updateAllowance = async (req, res) => {
   try {
-    const deletedPayroll = await Payroll.findOneAndDelete({ userId: req.params.userId });
-    if (!deletedPayroll) return res.status(404).json({ message: "Payroll details not found" });
+    const { userId, allowanceId } = req.params;
+    const { type, amount } = req.body;
 
-    await User.findByIdAndUpdate(req.params.userId, { salaryDetails: null });
+    const payroll = await Payroll.findOneAndUpdate(
+      { userId, "allowances._id": allowanceId },
+      {
+        $set: {
+          "allowances.$.type": type,
+          "allowances.$.amount": amount,
+        },
+      },
+      { new: true }
+    );
 
-    res.json({ message: "Payroll details removed successfully" });
+    if (!payroll) {
+      return res.status(404).json({ message: "Allowance not found" });
+    }
+
+    res.json({ message: "Allowance updated successfully", payroll });
   } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
+    res.status(500).json({ message: "Server error", error });
   }
 };
 
-// @desc Get payroll details of all employees
-// @route GET /payroll/all
-// @access Private (Admin/HR)
-const getAllPayrolls = async (req, res) => {
+
+// @desc    Delete an allowance for a user
+// @route   DELETE /payroll/allowance/:userId/:allowanceId
+// @access  Private
+
+const deleteAllowance = async (req, res) => {
   try {
-    const payrolls = await Payroll.find().populate("userId", "name email position");
-    res.json(payrolls);
+    const { userId, allowanceId } = req.params;
+
+    const payroll = await Payroll.findOneAndUpdate(
+      { userId },
+      { $pull: { allowances: { _id: allowanceId } } },
+      { new: true }
+    );
+
+    res.json({ message: "Allowance deleted successfully", payroll });
   } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
+    res.status(500).json({ message: "Server error", error });
   }
 };
 
-// @desc Process payroll and mark as paid
-// @route POST /payroll/process/:payrollId
-// @access Private (Admin)
-const processPayroll = async (req, res) => {
+
+// @desc    Update an existing deduction for a user
+// @route   PATCH /payroll/deduction/:userId/:deductionId
+// @access  Private
+
+const updateDeduction = async (req, res) => {
   try {
-    const payroll = await Payroll.findById(req.params.payrollId);
-    if (!payroll) return res.status(404).json({ message: "Payroll details not found" });
+    const { userId, deductionId } = req.params;
+    const { type, amount } = req.body;
 
-    payroll.status = "paid";
-    await payroll.save();
+    const payroll = await Payroll.findOneAndUpdate(
+      { userId, "deductions._id": deductionId },
+      {
+        $set: {
+          "deductions.$.type": type,
+          "deductions.$.amount": amount,
+        },
+      },
+      { new: true }
+    );
 
-    res.json({ message: "Payroll processed successfully", payroll });
+    if (!payroll) {
+      return res.status(404).json({ message: "Deduction not found" });
+    }
+
+    res.json({ message: "Deduction updated successfully", payroll });
   } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
+    res.status(500).json({ message: "Server error", error });
   }
 };
 
-module.exports= {
-  addPayroll,
+
+// @desc    Delete a deduction for a user
+// @route   DELETE /payroll/deduction/:userId/:deductionId
+// @access  Private
+
+const deleteDeduction = async (req, res) => {
+  try {
+    const { userId, deductionId } = req.params;
+
+    const payroll = await Payroll.findOneAndUpdate(
+      { userId },
+      { $pull: { deductions: { _id: deductionId } } },
+      { new: true }
+    );
+
+    res.json({ message: "Deduction deleted successfully", payroll });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+module.exports = {
   getPayroll,
-  addAllowance,
-  addDeduction,
-  updatePayroll,
-  deletePayroll,
   getAllPayrolls,
-  processPayroll,
+  updatePayroll,
+  addAllowance,
+  updateAllowance,
+  deleteAllowance,
+  addDeduction,
+  updateDeduction,
+  deleteDeduction,
 };

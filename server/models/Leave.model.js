@@ -1,12 +1,6 @@
 const mongoose = require("mongoose");
 
-const leaveSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-    unique: true,
-  },
+const leaveRecordSchema = new mongoose.Schema({
   leaveType: {
     type: String,
     enum: ["Sick", "Casual", "Paid", "Unpaid"],
@@ -22,6 +16,16 @@ const leaveSchema = new mongoose.Schema({
   },
   appliedAt: { type: Date, default: Date.now },
   approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Reference to HR/Admin who approves
+});
+
+const leaveSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+    unique: true, // Ensure one document per user
+  },
+  leaves: [leaveRecordSchema], // Array of leave records
 });
 
 module.exports = mongoose.model("Leave", leaveSchema);

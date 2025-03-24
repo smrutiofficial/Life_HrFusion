@@ -212,14 +212,7 @@ const registerUser = async (req, res) => {
     // **Automatically Create Attendance**
     const attendance = new Attendance({
       userId: user._id,
-      date: new Date(),
-      checkIn: new Date(),
-      checkOut: null, // No check-out by default
-      location: {
-        latitude: 0.0, // Default location (update later)
-        longitude: 0.0,
-      },
-      status: "Present",
+      attendance: [],
     });
 
     await attendance.save();
@@ -227,11 +220,7 @@ const registerUser = async (req, res) => {
     // **Automatically Create Leave Record (Default)**
     const leave = new Leave({
       userId: user._id,
-      leaveType: "Casual", // Default leave type
-      startDate: new Date(),
-      endDate: new Date(),
-      reason: "Default Leave Record",
-      status: "Pending",
+      leaves: [],
     });
 
     await leave.save();
