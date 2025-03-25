@@ -10,9 +10,19 @@ import Personalcomp from "../components/personal.comp";
 import Securitycomp from "../components/Security.comp";
 import axios from "axios";
 import { backend_link } from "@/app/constants/constant";
-import { profile } from "console";
+import Preloader from "../components/preload.comp";
 
 const Profile = () => {
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 2000); // Simulate loading time
+    return () => clearTimeout(timer);
+  }, []);
+
+
+
   const [proData, setProData] = useState({});
 
   useEffect(() => {
@@ -34,6 +44,8 @@ const Profile = () => {
     fetchUserData();
   }, [proData]); // Run only once on component mount
   return (
+    <>
+    {loading ? <Preloader /> : 
     <>
       <Bgcomp />
       <div className="flex gap-4 items-end">
@@ -111,6 +123,8 @@ const Profile = () => {
           </div>
         </div>
       </div>
+      </>
+    }
     </>
   );
 };

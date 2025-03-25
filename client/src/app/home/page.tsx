@@ -9,7 +9,16 @@ import Notificationcomp from "../components/Notification.comp";
 import QuickLinks from "../components/quicklink.comp";
 import axios from "axios";
 import {backend_link} from "@/app/constants/constant";
+import Preloader from "../components/preload.comp";
 const Dashboard = () => {
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 2000); // Simulate loading time
+    return () => clearTimeout(timer);
+  }, []);
+
   const [userData, setUserData] = useState({});
 
   useEffect(() => {
@@ -32,6 +41,8 @@ const Dashboard = () => {
   }, [userData]); // Run only once on component mount
 
   return (
+    <>
+    {loading ? <Preloader /> : 
     <div className="flex w-screen h-screen px-[2.5%] py-3">
       <div className="w-[75%]" style={{ height: "calc(100vh - 15%)" }}>
         <div className="flex-col relative h-[100%]">
@@ -99,6 +110,9 @@ const Dashboard = () => {
         <Notificationcomp />
       </div>
     </div>
+}
+</>
+
   );
 };
 

@@ -10,6 +10,7 @@ import axios from "axios";
 import { backend_link } from "../constants/constant";
 import Alowances from "../components/payslip/allowance.comp";
 import SalarySummary from "../components/payslip/salrysumary.comp";
+import Preloader from "../components/preload.comp";
 
 type Allowance = {
   type: string;
@@ -63,6 +64,14 @@ type UserData = {
 
 const Payslip = () => {
   // /payroll/role/all
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 2000); // Simulate loading time
+    return () => clearTimeout(timer);
+  }, []);
+
   const [userData, setUserData] = useState<UserData | null>(null);
   const [netSalary, setNetSalary] = useState<number | null>(null);
   useEffect(() => {
@@ -86,47 +95,58 @@ const Payslip = () => {
 
   return (
     <>
-      <Bgcomp />
-      <section className="w-[100%] h-[100%] overflow-scroll">
-        <div className="flex items-end">
-          <Logocomp />
-          <div className="flex gap-3 pb-2">
-            <Link href="/">
-              <p className="text-gray-400">Dashboard</p>
-            </Link>
-            <p className="text-gray-400">&gt;</p>
-            <p className="">My_Payslip</p>
-          </div>
-        </div>
-        {/* ---------------------------------------------- */}
-        <div className="h-full w-full mt-6">
-          <div className="h-[36.2rem] w-full px-14 py-2 flex justify-between gap-4">
-            <div className=" rounded-xl w-[70%] h-full bg-[#1D2135] flex flex-col">
-              {/* comp 1 */}
-              {userData && <EmployeeDetailsCard info={userData} />}
-            </div>
-            <div className=" rounded-xl w-[30%] h-fit bg-[#1D2135]">
-              {/* comp 2 */}
-              <SalaryChart net={netSalary} />
-            </div>
-          </div>
-          <div className="h-[45rem] w-full px-14 py-2 flex justify-between gap-4">
-            <div className=" rounded-xl w-[70%] h-full flex flex-col gap-2.5">
-              {/* comp 3 */}
-              <div className="rounded-xl bg-[#1D2135] h-[55%]">
-                {userData && <Alowances info={userData} />}
-              </div>
-              <div className="rounded-xl bg-[#1D2135] h-[55%]">
-                {userData && <Deductions info={userData} />}
+      {loading ? (
+        <Preloader />
+      ) : (
+        <>
+          <Bgcomp />
+          <section className="w-[100%] h-[100%] overflow-scroll">
+            <div className="flex items-end">
+              <Logocomp />
+              <div className="flex gap-3 pb-2">
+                <Link href="/">
+                  <p className="text-gray-400">Dashboard</p>
+                </Link>
+                <p className="text-gray-400">&gt;</p>
+                <p className="">My_Payslip</p>
               </div>
             </div>
-            <div className=" rounded-xl w-[30%] h-full bg-[#1D2135]">
-              {/* comp 4 */}
-              {userData && <SalarySummary info={[userData]}  onNetSalaryChange={setNetSalary} />}
+            {/* ---------------------------------------------- */}
+            <div className="h-full w-full mt-6">
+              <div className="h-[36.2rem] w-full px-14 py-2 flex justify-between gap-4">
+                <div className=" rounded-xl w-[70%] h-full bg-[#1D2135] flex flex-col">
+                  {/* comp 1 */}
+                  {userData && <EmployeeDetailsCard info={userData} />}
+                </div>
+                <div className=" rounded-xl w-[30%] h-fit bg-[#1D2135]">
+                  {/* comp 2 */}
+                  <SalaryChart net={netSalary} />
+                </div>
+              </div>
+              <div className="h-[45rem] w-full px-14 py-2 flex justify-between gap-4">
+                <div className=" rounded-xl w-[70%] h-full flex flex-col gap-2.5">
+                  {/* comp 3 */}
+                  <div className="rounded-xl bg-[#1D2135] h-[55%]">
+                    {userData && <Alowances info={userData} />}
+                  </div>
+                  <div className="rounded-xl bg-[#1D2135] h-[55%]">
+                    {userData && <Deductions info={userData} />}
+                  </div>
+                </div>
+                <div className=" rounded-xl w-[30%] h-full bg-[#1D2135]">
+                  {/* comp 4 */}
+                  {userData && (
+                    <SalarySummary
+                      info={[userData]}
+                      onNetSalaryChange={setNetSalary}
+                    />
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
+          </section>
+        </>
+      )}
     </>
   );
 };

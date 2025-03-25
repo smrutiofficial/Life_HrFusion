@@ -1,11 +1,21 @@
-import React from "react";
+"use client"
+import React, { useEffect, useState } from "react";
 import Bgcomp from "../components/bg.comp";
 import Logocomp from "../components/logo.comp";
 import Link from "next/link";
 import NotificationUI from "../components/sendnoti/sendnoti.comp";
+import Preloader from "../components/preload.comp";
 
 const Notification = () => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 2000); // Simulate loading time
+    return () => clearTimeout(timer);
+  }, []);
   return (
+    <>
+    {loading ? <Preloader /> : 
     <>
       <Bgcomp />
       <section className="w-[100%] h-full overflow-scroll">
@@ -24,6 +34,8 @@ const Notification = () => {
           <NotificationUI />
         </div>
       </section>
+    </>
+    }
     </>
   );
 };
