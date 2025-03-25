@@ -7,7 +7,7 @@ import { MdOutlineDateRange } from "react-icons/md";
 import { FaTransgender } from "react-icons/fa";
 import { GiLoveMystery } from "react-icons/gi";
 
-const Personalcomp = () => {
+const Personalcomp = ({profile}) => {
   const [formData, setFormData] = useState({
     email: "",
     phone: "",
@@ -45,7 +45,7 @@ const Personalcomp = () => {
           <input
             type="email"
             name="email"
-            value={formData.email}
+            value={profile.email}
             onChange={handleChange}
             placeholder="example@xyz.com"
             className="w-full mt-1 py-4 px-6 bg-[#363B58] rounded-md mb-2"
@@ -62,7 +62,7 @@ const Personalcomp = () => {
           <input
             type="tel"
             name="phone"
-            value={formData.phone}
+            value={profile.contactNumber}
             onChange={handleChange}
             className="w-full mt-1 py-4 px-6 bg-[#363B58] rounded-md mb-2"
             pattern="[0-9]{10,12}"
@@ -80,7 +80,7 @@ const Personalcomp = () => {
           <input
             type="date"
             name="dob"
-            value={formData.dob}
+            value={profile?.dateOfBirth ? new Date(profile.dateOfBirth).toISOString().split("T")[0] : ""}
             onChange={handleChange}
             className="w-full mt-1 py-4 px-6 bg-[#363B58] rounded-md mb-2"
             required
@@ -95,7 +95,7 @@ const Personalcomp = () => {
           </label>
           <select
             name="gender"
-            value={formData.gender}
+            value={profile.gender}
             onChange={handleChange}
             className="w-full mt-1 py-4 px-6 bg-[#363B58] rounded-md mb-2"
             required
@@ -115,7 +115,7 @@ const Personalcomp = () => {
           </label>
           <select
             name="maritalStatus"
-            value={formData.maritalStatus}
+            value={profile.maritalStatus}
             onChange={handleChange}
             className="w-full mt-1 py-4 px-6 bg-[#363B58] rounded-md"
             required

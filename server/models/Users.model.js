@@ -2,10 +2,11 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
-    userId: { type: Number, unique: true }, // Unique 8-digit user ID
+    hrmsId: { type: Number, unique: true }, // Unique 8-digit user ID
+    username: { type: String, unique: true }, 
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true },
-    password: { type: String, required: true ,select: false},
+    password: { type: String, required: true},
     avatar: { type: String }, // Profile Image URL
     role: {
       type: String,

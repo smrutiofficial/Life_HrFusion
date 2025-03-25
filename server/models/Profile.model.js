@@ -10,7 +10,7 @@ const ProfileSchema = new mongoose.Schema(
     },
     position: { type: String, required: true },
     department: { type: String, required: true },
-    joinedDate: { type: Date, required: true },
+    joinedDate: { type: String, required: true },
     contactNumber: { type: String, required: true },
     experience: { type: Number, required: true, default: 0 },
     dateOfBirth: { type: Date },

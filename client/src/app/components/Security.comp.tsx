@@ -16,11 +16,8 @@ const formatNumber = (num: string) => {
   return num.replace(/(.{4})/g, "$1 "); // Inserts space every 4 chars
 };
 
-const Securitycomp = () => {
-  const [formData, setFormData] = useState({
-    aadhar: "123456781234", // Example Aadhar (12 digits)
-    pan: "ABCDP1234Z", // Example PAN (10 characters)
-  });
+const Securitycomp = ({profile}) => {
+
 
   const [isAadharVisible, setIsAadharVisible] = useState(false);
   const [isPanVisible, setIsPanVisible] = useState(false);
@@ -42,7 +39,7 @@ const Securitycomp = () => {
           <div className="relative">
             <input
               type="text"
-              value={isAadharVisible ? formatNumber(formData.aadhar) : maskNumber(formData.aadhar)}
+              value={isAadharVisible ? formatNumber(profile.aadharCard) : maskNumber(profile.aadharCard)}
               className="w-full mt-1 py-3 px-5 bg-[#363B58] text-white rounded-md tracking-widest"
               readOnly
             />
@@ -65,7 +62,7 @@ const Securitycomp = () => {
           <div className="relative">
             <input
               type="text"
-              value={isPanVisible ? formatNumber(formData.pan) : maskNumber(formData.pan)}
+              value={isPanVisible ? formatNumber(profile.panCard) : maskNumber(profile.panCard)}
               className="w-full mt-1 py-3 px-5 bg-[#363B58] text-white rounded-md tracking-widest"
               readOnly
             />

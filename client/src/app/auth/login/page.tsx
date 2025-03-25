@@ -31,7 +31,8 @@ export default function Login() {
     try {
       const response = await axios.post(
         `${backend_link}/user/login`,
-        { email, password }
+        { email, password },
+        { withCredentials: true } // Ensure cookies are included
       );
       localStorage.setItem("token", response.data.token);
       router.push("/");

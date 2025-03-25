@@ -54,7 +54,7 @@ const getCurrentUserProfile = async (req, res) => {
 
     const profile = await Profile.findOne({ userId: id }).populate({
       path: "userId",
-      select: "email name role", // Only fetch email from the User model
+      select: "email name role avatar hrmsId username", // Only fetch email from the User model
     });
     if (!profile) {
       return res.status(404).json({ message: "Profile not found" });
@@ -80,7 +80,7 @@ const getProfile = async (req, res) => {
 
     const profile = await Profile.findOne({ userId }).populate({
       path: "userId",
-      select: "email name role", // Only fetch email from the User model
+      select: "email name role avatar hrmsId username", // Only fetch email from the User model
     });
     if (!profile) {
       return res.status(404).json({ message: "Profile not found" });
@@ -111,7 +111,7 @@ const getEmployees = async (req, res) => {
       .populate({
         path: "userId",
         match: roleFilter, // Dynamically match based on role
-        select: "email name role",
+        select: "email name role avatar hrmsId username",
       })
       .lean(); // Convert Mongoose documents to plain objects
 

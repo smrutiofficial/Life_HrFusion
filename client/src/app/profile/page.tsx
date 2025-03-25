@@ -1,4 +1,5 @@
-import React from "react";
+"use client"
+import { useEffect, useState } from "react";
 import Bgcomp from "../components/bg.comp";
 import Logocomp from "../components/logo.comp";
 import Link from "next/link";
@@ -7,9 +8,31 @@ import Selfpic from "../../images/selfpngbg.jpg";
 import { MdEdit } from "react-icons/md";
 import Personalcomp from "../components/personal.comp";
 import Securitycomp from "../components/Security.comp";
-
+import axios from "axios";
+import { backend_link } from "@/app/constants/constant";
+import { profile } from "console";
 
 const Profile = () => {
+  const [proData, setProData] = useState({});
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem("token"); // Get token from local storage
+        const response = await axios.get(`${backend_link}/profile/user/me`, {
+          headers: {
+            token: `${token}`, // Attach token in Authorization header
+          },
+        });
+        setProData(response.data); // Set user data
+        console.log(proData);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, [proData]); // Run only once on component mount
   return (
     <>
       <Bgcomp />
@@ -37,34 +60,41 @@ const Profile = () => {
             <div className="w-[55%] h-full flex items-center">
               {/* middle layer */}
               <div className="w-[85%] px-8">
-                <p className="text-2xl font-semibold pb-4">Smruti Prakash rout</p>
+                <p className="text-2xl font-semibold pb-4">{proData?.userId?.name || "Loading..."}</p>
                 <div className="flex w-full gap-8">
                   <div className="w-[50%] flex flex-col gap-2">
-                    <p className="text-[#A7ACCE]">User ID:
-                      <span className="pl-4">smruti985</span>
+                    <p className="text-[#A7ACCE]">
+                      User ID:
+                      <span className="pl-4">{proData.userId?.username}</span>
                     </p>
-                    <p className="text-[#A7ACCE]">Position:
-                      <span className="pl-4">Senior Product designer</span>
+                    <p className="text-[#A7ACCE]">
+                      Position:
+                      <span className="pl-4">{proData?.position}</span>
                     </p>
-                    <p className="text-[#A7ACCE]">Joined:
-                      <span className="pl-4">March 15,2022</span>
+                    <p className="text-[#A7ACCE]">
+                      Joined:
+                      <span className="pl-4">{proData.joinedDate}</span>
                     </p>
                   </div>
                   <div className="w-[50%] flex flex-col gap-2">
-                    <p className="text-[#A7ACCE]">HRMS ID:
-                      <span className="pl-4">7685443</span>
+                    <p className="text-[#A7ACCE]">
+                      HRMS ID:
+                      <span className="pl-4">{proData.userId?.hrmsId}</span>
                     </p>
-                    <p className="text-[#A7ACCE]">Department:
-                      <span className="pl-4">Design Team</span>
+                    <p className="text-[#A7ACCE]">
+                      Department:
+                      <span className="pl-4">{proData.department}</span>
                     </p>
                   </div>
                 </div>
-
               </div>
             </div>
             <div className="w-[30%] h-full flex flex-row justify-end pr-24 items-start py-18">
               {/* 3rd top layer */}
-              <button className="bg-[#363B58] text-[#9198C2] px-14 rounded-md py-2 flex justify-center items-center gap-4"><MdEdit className="text-[#]" />Edit Profile</button>
+              <button className="bg-[#363B58] text-[#9198C2] px-14 rounded-md py-2 flex justify-center items-center gap-4">
+                <MdEdit className="text-[#]" />
+                Edit Profile
+              </button>
             </div>
           </div>
         </div>
@@ -72,11 +102,11 @@ const Profile = () => {
           <div className="w-full flex justify-between h-full rounded-2xl">
             <div className="bg-[#1D2135] rounded-xl w-[49.5%] h-full px-12 py-8">
               {/* bottom left */}
-              <Personalcomp/>
+              <Personalcomp profile={proData}/>
             </div>
             <div className="bg-[#1D2135] rounded-xl w-[49.5%] h-full px-12 py-8 pb-14">
               {/* bottom right */}
-              <Securitycomp/>
+              <Securitycomp profile={proData} />
             </div>
           </div>
         </div>

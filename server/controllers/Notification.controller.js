@@ -1,81 +1,65 @@
-const Notification=require("../models/Notifications.model");
-const User = require("../models/Users.model")
-// @desc Send a notification (Only HR/Admin can send)
-// @route POST /notifications/send
-// @access Private (HR, Admin)
+const Notification = require("../models/Notifications.model");
+const mongoose = require("mongoose");
+
+// Send Notification
 const sendNotification = async (req, res) => {
   try {
-    const {userId, title, message, recipientType } = req.body;
-  // Fetch user details from the User model
-  const user = await User.findById(userId);
-  if (!user) {
-    return res.status(404).json({ message: "User not found" });
-  }
+    const {
+      fromUser,
+      recipients,
+      specificEmployees,
+      message,
+      priority,
+      timerLeft,
+    } = req.body;
 
-  // Check if the user has the required role (HR or Admin)
-  if (!["HR", "admin"].includes(user.role)) {
-    return res.status(403).json({ message: "Access denied. Only HR or Admin can send notifications." });
-  }
-
-  // Proceed with sending notification
-  const notification = new Notification({
-    title,
-    message,
-    recipientType,
-    sender: userId
-  });
-  await notification.save();
-    res.status(201).json({ message: "Notification sent successfully", notification });
-  } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
-  }
-};
-
-// @desc Get all notifications for the logged-in user
-// @route GET /notifications
-// @access Private (All users)
-const getNotifications = async (req, res) => {
-  try {
-    let recipientFilter = { recipientType: "all" }; // Default to "all" notifications
-
-    if (req.user.role === "employee") {
-      recipientFilter = { $or: [{ recipientType: "employee" }, { recipientType: "all" }] };
-    } else if (req.user.role === "HR") {
-      recipientFilter = { $or: [{ recipientType: "HR" }, { recipientType: "all" }] };
-    } else if (req.user.role === "admin") {
-      recipientFilter = { $or: [{ recipientType: "admin" }, { recipientType: "all" }] };
+    if (!fromUser || !message || !recipients) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const notifications = await Notification.find(recipientFilter).sort({ createdAt: -1 });
+    // Calculate expiration time
+    const expiresAt = new Date(
+      Date.now() + (timerLeft || 2 * 24 * 60 * 60) * 1000
+    ); // Default 2 days
 
-    res.json(notifications);
+    // Create Notification
+    const newNotification = new Notification({
+      fromUser: new mongoose.Types.ObjectId(fromUser),
+      recipients,
+      specificEmployees: specificEmployees
+        ? specificEmployees.map((id) => new mongoose.Types.ObjectId(id))
+        : [],
+      message,
+      priority,
+      timerLeft: timerLeft || 2 * 24 * 60 * 60, // Default to 2 days in seconds
+      expiresAt,
+    });
+
+    await newNotification.save();
+    return res.status(201).json({
+      message: "Notification sent successfully",
+      notification: newNotification,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
+    console.error("Error sending notification:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-// @desc Delete a notification (Only HR/Admin)
-// @route DELETE /notifications/:notificationId
-// @access Private (HR, Admin)
-const deleteNotification = async (req, res) => {
+// Auto Delete Expired Notifications
+const autoDeleteExpiredNotifications = async () => {
   try {
-    const notification = await Notification.findById(req.params.notificationId);
-    if (!notification) return res.status(404).json({ message: "Notification not found" });
+    const now = new Date();
+    const result = await Notification.deleteMany({ expiresAt: { $lte: now } });
 
-    if (!["HR", "admin"].includes(req.user.role)) {
-      return res.status(403).json({ message: "Access denied. Only HR or Admin can delete notifications." });
-    }
-
-    await Notification.findByIdAndDelete(req.params.notificationId);
-
-    res.json({ message: "Notification deleted successfully" });
+    console.log(`Deleted ${result.deletedCount} expired notifications.`);
   } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
+    console.error("Error deleting expired notifications:", error);
   }
 };
 
-module.exports={
-sendNotification,
-getNotifications,
-deleteNotification,
+// Export controllers
+module.exports = {
+  sendNotification,
+  autoDeleteExpiredNotifications,
 };

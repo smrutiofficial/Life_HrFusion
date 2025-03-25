@@ -64,10 +64,9 @@ const verifyOtp = async (req, res) => {
       to: email,
       subject: "Welcome to Life Hrfusion!",
       // text: `Hi ${user.name},\n\nWelcome to Life Hrfusion! We’re excited to have you onboard.\n\nYour registration is successful, and you’re all set to explore.Your hrms id is ${user.userId}.`,
-      html: Welcome_Email_Template.replace("{name}", user.name).replace(
-        "{userId}",
-        user.userId
-      ),
+      html: Welcome_Email_Template.replace("{name}", user.name)
+        .replace("{hrmsId}", user.hrmsId)
+        .replace("{username}", user.username),
     };
 
     await transporter.sendMail(sendWelcomeEmail);
@@ -149,6 +148,20 @@ const registerUser = async (req, res) => {
       return 7000000 + Math.floor(Math.random() * 1000000);
     };
 
+    const generateUsername = async (name) => {
+      const firstWord = name.split(" ")[0].toLowerCase(); // Get first word and convert to lowercase
+      let randomDigits = Math.floor(1000 + Math.random() * 9000); // Generate 4-digit number
+      let username = `${firstWord}${randomDigits}`;
+
+      // Ensure uniqueness
+      while (await User.findOne({ username })) {
+        randomDigits = Math.floor(1000 + Math.random() * 9000);
+        username = `${firstWord}${randomDigits}`;
+      }
+
+      return username;
+    };
+
     // Check if the user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -157,13 +170,15 @@ const registerUser = async (req, res) => {
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 6);
-    const userId = generateUserId();
+    const hrmsId = generateUserId();
+    const username = await generateUsername(name);
     const otp = generateOtp();
     const otpExpireTime = Date.now() + 5 * 60 * 1000; // OTP expires in 5 minutes
 
     // Create a new user
     const user = new User({
-      userId,
+      hrmsId,
+      username,
       name,
       email,
       password: hashedPassword,
@@ -246,7 +261,6 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log({ email, password });
     const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ message: "Invalid email" });
 
@@ -264,7 +278,7 @@ const loginUser = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.json({ success: true, message: "Login successful" });
+    res.json({ success: true, message: "Login successful", token });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }

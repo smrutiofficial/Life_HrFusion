@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import Profilecomp from "../components/profile.comp";
 import Statuscomp from "../components/status.comp";
 import Profilebtns from "../components/profile_btns.comp";
@@ -7,8 +7,30 @@ import Managementcomp from "../components/Management.comp";
 import Payrollcomp from "../components/Payroll.comp";
 import Notificationcomp from "../components/Notification.comp";
 import QuickLinks from "../components/quicklink.comp";
-
+import axios from "axios";
+import {backend_link} from "@/app/constants/constant";
 const Dashboard = () => {
+  const [userData, setUserData] = useState({});
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem("token"); // Get token from local storage
+        const response = await axios.get(`${backend_link}/profile/user/me`, {
+          headers: {
+            token: `${token}`, // Attach token in Authorization header
+          },
+        });
+        setUserData(response.data); // Set user data
+        console.log(userData);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, [userData]); // Run only once on component mount
+
   return (
     <div className="flex w-screen h-screen px-[2.5%] py-3">
       <div className="w-[75%]" style={{ height: "calc(100vh - 15%)" }}>
@@ -18,7 +40,7 @@ const Dashboard = () => {
             <div className="flex w-full h-full">
               <div className="w-[24%]">
                 {/* image */}
-                <Profilecomp />
+                <Profilecomp profile={userData} />
               </div>
               <div className="w-[76%]">
                 <div className="w-full h-full">
@@ -64,7 +86,7 @@ const Dashboard = () => {
               </div>
               <div className="w-[20%] mr-2.5 h-full flex justify-center items-center">
                 <div className="bg-[#1D2135] border border-gray-400 w-full h-[94%] rounded-xl">
-                <QuickLinks/>
+                  <QuickLinks />
                 </div>
               </div>
             </div>

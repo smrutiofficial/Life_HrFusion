@@ -167,7 +167,10 @@ const Welcome_Email_Template = `
               <p>We are thrilled to have you join us! Your registration was successful, and we are committed to providing you with the best experience possible.</p>
           
               <p>Your hrms id is</p>
-              <span class="userid">{userId}.</span>
+              <span class="userid">{hrmsId}</span>
+              <p>Your username is</p>
+              <span class="userid">{username}</span>
+              
               <p>If you need any help, don't hesitate to contact us. We are here to support you every step of the way.</p>
           </div>
           <div class="footer">

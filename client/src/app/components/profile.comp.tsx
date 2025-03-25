@@ -6,9 +6,8 @@ import Link from "next/link";
 import { BiLogOut } from "react-icons/bi";
 import { useRouter } from "next/navigation";
 
-const Profilecomp = () => {
+const Profilecomp = ({profile}) => {
   const router = useRouter();
-
   const handleLogout = () => {
     localStorage.removeItem("token"); // Remove token from localStorage
     router.push("/auth/login"); // Redirect to login page
@@ -32,17 +31,17 @@ const Profilecomp = () => {
           </div>
           <div className="flex flex-col relative">
             <p className=" pt-2 text-lg text-gray-200 text-center font-semibold">
-              Smruti Prakash Rout
+            {profile.userId?.name}
             </p>
             <p className="pt-1 text[10px] text-center text-[#897EEF]">
-              CEO & Founder
+              {profile.position}
             </p>
           </div>
         </div>
         <div className=" absolute w-full h-[35%] -bottom-8">
           <div className="w-[90%] py-2 h-[70%] mx-auto rounded-xl">
             <p className="text-center text-[#97BA8B] pb-3">
-              4+ years of experience
+              {profile.experience} + years of experience
             </p>
             <div className="flex justify-evenly">
               <Link
