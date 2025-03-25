@@ -1,37 +1,79 @@
 "use client"
-import React from "react";
+import React, { useState } from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { FaDownload } from "react-icons/fa";
+import axios from "axios";
 
-const data = [
+  
+const TaxSummary = ({ taxData }) => {
+  const [taxResult, setTaxResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const fetchIncomeTax = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post("http://localhost:5000/payroll/incometax", {
+        basicPay: taxData?.basicPay || 0,
+        allowances: taxData?.allowances || 0,
+        deductions: taxData?.deductions || 0,
+      });
+
+      setTaxResult(response.data);
+    } catch (error) {
+      console.error("Error fetching income tax:", error);
+    }
+    setLoading(false);
+  };
+
+
+  const data = taxResult
+    ? [
     { name: "Tax Payable", value: 19200, color: "#6e7393" },
     { name: "Total Deductions", value: 24000, color: "#ff9898" },
-    { name: "Net Taxable Income", value: 96000, color: "#897EEF" },
-];
+    { name: "Net Taxable", value: 96000, color: "#897EEF" },
+  ]
+  : [];
 const renderLabel = ({ name }) => name;
 
-const TaxSummary = () => {
+
+
   return (
     <div className="bg-[#1D2135] py-10 px-12 rounded-lg w-full text-white">
       <h2 className="text-lg font-semibold mb-4">Tax Summary</h2>
       <div className="space-y-2">
         <div className="flex justify-between">
           <span className="text-gray-400">Gross Income</span>
-          <span className="font-semibold">₹120,000</span>
+          <span className="font-semibold">₹{taxData?.basicPay}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-400">Total Deductions</span>
-          <span className="font-semibold">₹24,000</span>
+          <span className="font-semibold">₹{taxData?.deductions}</span>
         </div>
         <div className="flex justify-between text-lg">
-          <span className="text-gray-400">Net Taxable Income</span>
-          <span className="font-bold ">₹96,000</span>
+          <span className="text-gray-400">Total Allowances</span>
+          <span className="font-bold ">₹{taxData?.allowances}</span>
         </div>
       </div>
       <div className="mt-4 border-t border-gray-700 pt-4">
         <div className="flex justify-between text-lg pb-2">
-          <span>Tax Payable</span>
-          <span className="font-bold">₹19,200</span>
+          <span className="text-gray-400">Gross Income</span>
+          <span className="text-gray-400">₹{taxResult?.grossIncome}</span>
+        </div>
+        <div className="flex justify-between text-lg pb-2">
+          <span className="text-gray-400">Taxable Income</span>
+          <span className="text-gray-400">₹{taxResult?.taxableIncome}</span>
+        </div>
+        <div className="flex justify-between text-lg pb-2">
+          <span className="text-gray-400">Tax Amount</span>
+          <span className="text-gray-400">₹{taxResult?.taxAmount}</span>
+        </div>
+        <div className="flex justify-between text-lg pb-2">
+          <span className="text-gray-400">cess</span>
+          <span className="text-gray-400">₹{taxResult?.cess}</span>
+        </div>
+        <div className="flex justify-between text-lg pb-2">
+          <span className="text-gray-400">Final Tax</span>
+          <span className="font-bold">₹{taxResult?.finalTax}</span>
         </div>
         <div className="flex justify-between text-sm text-gray-400">
           <span>Rebate under Section 87A</span>
@@ -39,8 +81,11 @@ const TaxSummary = () => {
         </div>
       </div>
       <div className="mt-8">
-        <button className="w-full bg-[#897EEF] text-white py-4 mb-1 rounded-lg hover:bg-[#9b93e0]">
-          Calculate Tax
+        <button className="w-full bg-[#897EEF] text-white py-4 mb-1 rounded-lg hover:bg-[#9b93e0]"
+        onClick={fetchIncomeTax}
+        disabled={loading}
+        >
+        {loading ? "Calculating..." : "Calculate Tax"}
         </button>
       </div>
       <div className="mt-2">

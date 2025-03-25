@@ -1,4 +1,6 @@
-import React from "react";
+"use client"
+
+import React, { useCallback, useState } from "react";
 import Bgcomp from "../components/bg.comp";
 import Logocomp from "../components/logo.comp";
 import Link from "next/link";
@@ -7,6 +9,15 @@ import TaxSummary from "../components/incometax/pie.comp";
 import TaxSlabDetails from "../components/incometax/taxslab.comp";
 
 const Incometax = () => {
+  const [taxData, setTaxData] = useState({
+    basicPay: 0,
+    allowances: 0,
+    deductions: 0,
+  });
+
+  const handleTaxData = useCallback((data) => {
+    setTaxData(data);
+  }, []);
   return (
     <>
       <Bgcomp />
@@ -25,10 +36,10 @@ const Incometax = () => {
         <div className="w-full h-fit flex">
           <div className="w-[70%] h-fit px-8">
             {/* input section */}
-            <TaxForm />
+            <TaxForm onTaxDataChange={handleTaxData}/>
           </div>
           <div className="w-[30%] h-full pr-14 pt-6">
-            <TaxSummary />
+            <TaxSummary taxData={taxData}/>
           </div>
         </div>
         <div className="px-13 pb-4">

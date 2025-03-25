@@ -1,33 +1,10 @@
 "use client";
 
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-const TaxForm = () => {
-  // const [formData, setFormData] = useState({
-  //   financialYear: "2023-24",
-  //   taxRegime: "New Regime",
-  //   annualSalary: "",
-  //   annualBonus: "",
-  //   hra: "",
-  //   travelAllowance: "",
-  //   specialAllowance: "",
-  //   providentFund: "",
-  //   professionalTax: "",
-  //   insurancePremium: "",
-  // });
-
-  // const handleChange = (
-  //   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  // ) => {
-  //   setFormData({ ...formData, [e.target.name]: e.target.value });
-  // };
-
-
-
-
-
-
+const TaxForm = ({ onTaxDataChange }) => {
+ 
   const [formData, setFormData] = useState({
     financialYear: "2023-24",
     taxRegime: "New Regime",
@@ -44,41 +21,34 @@ const TaxForm = () => {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
-  const calculateAndSubmit = async () => {
-    // Parse input values to numbers (defaulting to 0 if empty)
-    const annualSalary = parseFloat(formData.annualSalary) || 0;
-    const annualBonus = parseFloat(formData.annualBonus) || 0;
-    const hra = parseFloat(formData.hra) || 0;
-    const travelAllowance = parseFloat(formData.travelAllowance) || 0;
-    const specialAllowance = parseFloat(formData.specialAllowance) || 0;
-    const providentFund = parseFloat(formData.providentFund) || 0;
-    const professionalTax = parseFloat(formData.professionalTax) || 0;
-    const insurancePremium = parseFloat(formData.insurancePremium) || 0;
+  useEffect(() => {
+    const calculateAndSubmit = async () => {
+      const annualSalary = parseFloat(formData.annualSalary) || 0;
+      const annualBonus = parseFloat(formData.annualBonus) || 0;
+      const hra = parseFloat(formData.hra) || 0;
+      const travelAllowance = parseFloat(formData.travelAllowance) || 0;
+      const specialAllowance = parseFloat(formData.specialAllowance) || 0;
+      const providentFund = parseFloat(formData.providentFund) || 0;
+      const professionalTax = parseFloat(formData.professionalTax) || 0;
+      const insurancePremium = parseFloat(formData.insurancePremium) || 0;
 
-    // Compute required values
-    const basicPay = annualSalary + annualBonus;
-    const allowances = hra + travelAllowance + specialAllowance;
-    const deductions = providentFund + professionalTax + insurancePremium;
+      const basicPay = annualSalary + annualBonus;
+      const allowances = hra + travelAllowance + specialAllowance;
+      const deductions = providentFund + professionalTax + insurancePremium;
 
-    // Payload
-    const payload = {
-      basicPay,
-      allowances,
-      deductions,
+      // Send updated values to the parent component
+      const payload = { basicPay, allowances, deductions };
+      onTaxDataChange(payload);
     };
 
-    console.log("Sending data:", payload);
-
-    try {
-      const response = await axios.post("http://localhost:5000/payroll/incometax", payload);
-      console.log("Response:", response.data);
-    } catch (error) {
-      console.error("Error submitting data:", error);
-    }
-  };
+    calculateAndSubmit();
+  }, [formData, onTaxDataChange]);
 
 
 
@@ -234,12 +204,12 @@ const TaxForm = () => {
             />
           </div>
         </section>
-        <button
-          onClick={calculateAndSubmit}
+        {/* <button
+          // onClick={calculateAndSubmit}
           className="bg-[#897EEF] text-white px-6 py-6 rounded-lg mt-4"
         >
           Calculate Tax
-        </button>
+        </button> */}
       </div>
     </div>
   );
