@@ -9,6 +9,12 @@ const ProfileSchema = new mongoose.Schema(
       unique: true,
     },
     position: { type: String, required: true },
+    status: {
+      type: String,
+      required: true,
+      enum: ["active", "inactive"],
+      default: "inactive",
+    },
     department: { type: String, required: true },
     joinedDate: { type: String, required: true },
     contactNumber: { type: String, required: true },

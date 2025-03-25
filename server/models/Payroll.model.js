@@ -8,6 +8,12 @@ const payrollSchema = new mongoose.Schema({
     unique: true,
   },
   basicpay: { type: Number, required: true, default: 0 },
+  status: {
+    type: String,
+    required: true,
+    enum: ["paid", "unpaid"],
+    default: "unpaid",
+  },
   bankac: { type: String, required: true, default: "00000000000" },
   ifsc: { type: String, required: true ,default: "SBIN0000000"},
   allowances: [

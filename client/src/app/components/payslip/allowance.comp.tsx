@@ -55,17 +55,17 @@ type EmployeeDetailsCardProps = {
   info: UserData;
 };
 
-const Deductions: React.FC<EmployeeDetailsCardProps> = ({ info }) => {
+const Alowances: React.FC<EmployeeDetailsCardProps> = ({ info }) => {
   return (
     <div className="p-14 h-full rounded-xl">
       {/* Header */}
       <div className="flex justify-between items-center mb-3">
-        <h3 className="text-lg font-medium pl-8 text-gray-400">Deductions</h3>
+        <h3 className="text-lg font-medium pl-8 text-gray-400">Allowences</h3>
       </div>
 
       {/* Deduction Items */}
       <div className="space-y-2 px-8">
-        {info?.payroll?.deductions?.map((deduction) => (
+        {info?.payroll?.allowances?.map((deduction) => (
           <div
             key={deduction._id}
             className="flex justify-between items-center py-6 px-14 bg-[#363B58] rounded-lg text-gray-300 mb-4"
@@ -86,4 +86,4 @@ const Deductions: React.FC<EmployeeDetailsCardProps> = ({ info }) => {
   );
 };
 
-export default Deductions;
+export default Alowances;

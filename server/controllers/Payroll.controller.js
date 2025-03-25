@@ -27,39 +27,53 @@ const getPayroll = async (req, res) => {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
-
-// @desc Get all payroll details with user and profile data
-// @route GET /payroll/all
+// @desc Get payroll details for employees based on role
+// @route GET /payroll/:role
 // @access Private (Admin/HR)
-const getAllPayrolls = async (req, res) => {
+const getAllEmployeePayroll = async (req, res) => {
   try {
-    const payrolls = await Payroll.find().populate({
-      path: "userId",
-      select: "name email",
-      populate: {
-        path: "profile",
-        select:
-          "position department joinedDate contactNumber dateOfBirth gender",
-      },
-    });
+    const { role } = req.params; // Extract role from URL params
+
+    let query = {}; // Default: No filter (fetch all)
+
+    // Filter based on the role
+    if (role !== "all") {
+      query = { "userId.role": role }; // Match the user role
+    }
+
+    const payrolls = await Payroll.find()
+      .populate({
+        path: "userId",
+        select: "name email role",
+        populate: {
+          path: "profile",
+          select:
+            "position department joinedDate contactNumber dateOfBirth gender",
+        },
+      })
+      .then((payrolls) =>
+        payrolls.filter((p) => role === "all" || p.userId.role === role)
+      ); // Apply role filtering manually
+
+    if (!payrolls.length)
+      return res.status(404).json({ message: "No payroll records found" });
 
     res.json(payrolls);
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
-
 // @desc Update payroll details
 // @route PUT /payroll/update/:userId
 // @access Private (Admin/HR)
 const updatePayroll = async (req, res) => {
   try {
-    const { basicpay, allowances, deductions, ctc, epf, bankac, ifsc } =
+    const { basicpay, allowances, deductions, ctc, epf, bankac, ifsc, status } =
       req.body;
 
     const updatedPayroll = await Payroll.findOneAndUpdate(
       { userId: req.params.userId },
-      { basicpay, allowances, deductions, ctc, epf, bankac, ifsc },
+      { basicpay, allowances, deductions, ctc, epf, bankac, ifsc, status },
       { new: true }
     );
 
@@ -116,7 +130,6 @@ const addDeduction = async (req, res) => {
   }
 };
 
-
 // @desc    Update an existing allowance for a user
 // @route   PATCH /payroll/allowance/:userId/:allowanceId
 // @access  Private
@@ -147,7 +160,6 @@ const updateAllowance = async (req, res) => {
   }
 };
 
-
 // @desc    Delete an allowance for a user
 // @route   DELETE /payroll/allowance/:userId/:allowanceId
 // @access  Private
@@ -167,7 +179,6 @@ const deleteAllowance = async (req, res) => {
     res.status(500).json({ message: "Server error", error });
   }
 };
-
 
 // @desc    Update an existing deduction for a user
 // @route   PATCH /payroll/deduction/:userId/:deductionId
@@ -199,7 +210,6 @@ const updateDeduction = async (req, res) => {
   }
 };
 
-
 // @desc    Delete a deduction for a user
 // @route   DELETE /payroll/deduction/:userId/:deductionId
 // @access  Private
@@ -220,9 +230,50 @@ const deleteDeduction = async (req, res) => {
   }
 };
 
+
+
+
+// @desc Get current login user profile with payroll
+// @route PUT /profile/user/me
+// @access Private (User)
+const getCurrentUserProfileWithPayroll = async (req, res) => {
+  try {
+    const { id } = req.user; // Extract user ID from request
+    console.log({ id });
+
+    // Fetch user profile and populate necessary fields
+    const profile = await Profile.findOne({ userId: id }).populate({
+      path: "userId",
+      select: "email name role avatar hrmsId username",
+    });
+
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
+    // Fetch payroll details separately using userId
+    const payroll = await Payroll.findOne({ userId: id }).select(
+      "basicpay bankac ifsc allowances ctc deductions "
+    );
+
+    // Construct response object
+    const profileWithPayroll = {
+      ...profile.toObject(),
+      email: profile.userId.email,
+      payroll: payroll || null, // Ensure payroll is included, even if it's null
+    };
+
+    res.status(200).json(profileWithPayroll);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching profile", error });
+  }
+};
+
+
 module.exports = {
   getPayroll,
-  getAllPayrolls,
+  getAllEmployeePayroll,
+  getCurrentUserProfileWithPayroll,
   updatePayroll,
   addAllowance,
   updateAllowance,

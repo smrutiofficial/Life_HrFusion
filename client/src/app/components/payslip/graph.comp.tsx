@@ -5,7 +5,7 @@ import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip);
 
-const SalaryChart = () => {
+const SalaryChart = ({net}) => {
   const data = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
     datasets: [
@@ -47,7 +47,7 @@ const SalaryChart = () => {
   return (
     <div className="px-14 py-14 h-full rounded-xl shadow-lg border border-gray-700">
       <h3 className="text-lg font-medium text-gray-400 text-center pb-4">Net Salary</h3>
-      <p className="text-4xl font-bold text-center pb-4 bg-gradient-to-r from-[#897EEF] to-[#4a00e0] text-transparent bg-clip-text">$8,500.00</p>
+      <p className="text-4xl font-bold text-center pb-4 bg-gradient-to-r from-[#897EEF] to-[#4a00e0] text-transparent bg-clip-text">₹{net}</p>
       <p className="text-sm text-[#897EEF] text-center pb-4">↑ 4.2% from last month</p>
 
       <div className="h-72 mt-6">

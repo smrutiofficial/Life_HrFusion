@@ -76,12 +76,7 @@ export default function DashboardNotifications() {
             </p>
           </div>
           {/* Announcement 4 */}
-          <div className="bg-[#363B58] p-3 rounded-lg pb-8 px-8">
-            <p className="text-white font-semibold">Office Holiday</p>
-            <p className="text-gray-400 text-sm">
-              Office will be closed on Dec 25th for Christmas
-            </p>
-          </div>
+          
         </div>
       </div>
     </div>

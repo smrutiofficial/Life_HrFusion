@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Bgcomp from "../components/bg.comp";
 import Logocomp from "../components/logo.comp";
 import Link from "next/link";
@@ -8,8 +8,32 @@ import { IoSearch } from "react-icons/io5";
 import Pagination from "../components/Pagination.comp";
 
 import PayrollTable from "../components/payrolltable.comp";
+import axios from "axios";
+import { backend_link } from "../constants/constant";
+
 
 const Payroll = () => {
+
+  // /payroll/role/all
+  const [userData, setUserData] = useState<any[]>([]);
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem("token"); // Get token from local storage
+        const response = await axios.get(`${backend_link}/payroll/role/all`, {
+          headers: {
+            token: `${token}`, // Attach token in Authorization header
+          },
+        });
+        setUserData(response.data); // Set user data
+        console.log(userData);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []); // Run only once on component mount
 
   const [selectedDepartment, setSelectedDepartment] = useState("");
 
@@ -95,7 +119,7 @@ const Payroll = () => {
         {/* employees ................---------------------------- */}
 
         <div className="px-12 flex flex-row flex-wrap gap-8.5 py-2">
-        <PayrollTable />
+        <PayrollTable userpayrole={userData} />
         </div>
         {/* ---------------------------------------- */}
         <hr className="text-gray-400 my-10 mx-14" />

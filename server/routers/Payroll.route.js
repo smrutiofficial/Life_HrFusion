@@ -1,7 +1,8 @@
 const express = require("express");
 const {
   getPayroll,
-  getAllPayrolls,
+  getAllEmployeePayroll,
+  getCurrentUserProfileWithPayroll,
   updatePayroll,
   addAllowance,
   updateAllowance,
@@ -10,11 +11,13 @@ const {
   updateDeduction,
   deleteDeduction,
 } = require("../controllers/Payroll.controller");
+const { authenticate } = require("../middlewares/auth.middleware");
 
 const router = express.Router();
 
+router.get("/cuser",authenticate,getCurrentUserProfileWithPayroll)
 router.get("/:userId", getPayroll);
-router.get("/all", getAllPayrolls);
+router.get("/role/:role", getAllEmployeePayroll);
 router.put("/update/:userId", updatePayroll);
 
 router.put("/allowance/:userId", addAllowance);

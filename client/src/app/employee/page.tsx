@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Bgcomp from "../components/bg.comp";
 import Logocomp from "../components/logo.comp";
 import Link from "next/link";
@@ -7,74 +7,42 @@ import { IoSearch } from "react-icons/io5";
 import EmployeeCard from "../components/employeecard.comp";
 import Pagination from "../components/Pagination.comp";
 import { IoMdAdd } from "react-icons/io";
+import axios from "axios";
+import { backend_link } from "../constants/constant";
 
-type Employee = {
+interface Employee {
   name: string;
   role: string;
-  phone: string;
+  contactNumber: string;
   department: string;
   email: string;
-  status: "Active" | "Inactive";
+  status: "active" | "inactive";
   imageUrl: string;
-};
+}
 
 const Employee = () => {
-  const employees: Employee[] = [
-    {
-      name: "Emma Wilson",
-      role: "HR Director",
-      phone: "+91 7865554300",
-      department: "Human Resources",
-      email: "emmawilson@gmail.com",
-      status: "Active",
-      imageUrl: "/images/emp1.jpg",
-    },
-    {
-      name: "John Doe",
-      role: "Software Engineer",
-      phone: "+1 234 567 890",
-      department: "Engineering",
-      email: "johndoe@example.com",
-      status: "Active",
-      imageUrl: "/images/emp2.jpg",
-    },
-    {
-      name: "Sophia Davis",
-      role: "Product Manager",
-      phone: "+44 1234 567890",
-      department: "Product",
-      email: "sophia@example.com",
-      status: "Inactive",
-      imageUrl: "/images/emp8.jpg",
-    },
-    {
-      name: "Liam Smith",
-      role: "Marketing Lead",
-      phone: "+49 1520 9876543",
-      department: "Marketing",
-      email: "liam@example.com",
-      status: "Active",
-      imageUrl: "/images/emp9.jpg",
-    },
-    {
-      name: "Olivia Brown",
-      role: "Finance Manager",
-      phone: "+33 6 78 90 12 34",
-      department: "Finance",
-      email: "olivia@example.com",
-      status: "Active",
-      imageUrl: "/images/emp5.jpg",
-    },
-    {
-      name: "Noah Johnson",
-      role: "DevOps Engineer",
-      phone: "+81 90 1234 5678",
-      department: "IT Operations",
-      email: "noah@example.com",
-      status: "Inactive",
-      imageUrl: "/images/emp6.jpg",
-    },
-  ];
+
+const [userData, setUserData] = useState<Employee[]>([]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem("token"); // Get token from local storage
+        const response = await axios.get(`${backend_link}/profile/user/all`, {
+          headers: {
+            token: `${token}`, // Attach token in Authorization header
+          },
+        });
+        setUserData(response.data); // Set user data
+        console.log(userData);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, [userData]); // Run only once on component mount
+
 
   const [selectedDepartment, setSelectedDepartment] = useState("");
 
@@ -178,7 +146,7 @@ const Employee = () => {
       
 
         <div className="px-12 flex flex-row flex-wrap gap-4 py-4">
-          {employees.map((employee, index) => (
+          {userData.map((employee, index) => (
             <EmployeeCard key={index} {...employee} />
           ))}
         </div>

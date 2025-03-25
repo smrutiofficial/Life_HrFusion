@@ -88,58 +88,6 @@ const verifyOtp = async (req, res) => {
   }
 };
 
-// @desc Register a new user
-// @route POST /users/register
-// @access Public
-// const registerUser = async (req, res) => {
-//   try {
-//     const { name, email, password } = req.body;
-
-//     const generateUserId = () => {
-//       const id = 7000000 + Math.floor(Math.random() * 1000000);
-//       // console.log("Generated User ID:", id); // Debugging log
-//       return id;
-//     };
-//     // Check if the user already exists
-//     const existingUser = await User.findOne({ email });
-//     if (existingUser)
-//       return res.status(400).json({ message: "User already exists" });
-
-//     // Hash the password
-//     const hashedPassword = await bcrypt.hash(password, 6);
-
-//     // Explicitly generate a userId
-//     const userId = generateUserId();
-
-//     const otp = generateOtp();
-//     const otpExpireTime = Date.now() + 5 * 60 * 1000; // OTP expires in 5 minutes
-
-//     // Create a new user
-//     const user = new User({
-//       userId, // Assign userId explicitly
-//       name,
-//       email,
-//       password: hashedPassword,
-//       verifyOtp: otp,
-//       verifyOtpExpireAt: otpExpireTime,
-//     });
-
-//     await user.save();
-//     await sendOtp(email, otp);
-
-//     res
-//       .status(201)
-//       .json({ success: true, message: "User registered successfully" });
-//   } catch (error) {
-//     console.error("Error during user registration:", error); // Log the error for debugging
-//     res.status(500).json({
-//       success: false,
-//       message: "Server Error",
-//       error: error.message,
-//     });
-//   }
-// };
-
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
