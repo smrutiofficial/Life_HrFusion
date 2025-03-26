@@ -8,8 +8,16 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { backend_link } from "@/app/constants/constant";
+import Preloader from "@/app/components/preload.comp";
 
 export default function Register() {
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 2000); // Simulate loading time
+    return () => clearTimeout(timer);
+  }, []);
+
+
   const refs = useRef<(HTMLInputElement | null)[]>(new Array(6).fill(null));
   const [formData, setFormData] = useState({
     name: "",
@@ -158,129 +166,135 @@ export default function Register() {
   }, [router]);
 
   return (
-    <>
-      <div className=" relative">
-        <div className="flex flex-row text-white">
-          <div className="w-1/2 h-[100vh] overflow-hiddenflex justify-center items-center">
-            {/* image  */}
-            {/* <Image
-              src=""
-              alt="bg-image"
-              className="w-full h-full object-cover"
-            ></Image> */}
-          </div>
-
-          <div className="w-1/2 flex flex-col justify-center  bg-[#1D2135] relative">
-            <div
-              className={`bg-gray-800 ${otp} h-full w-full absolute flex-col items-center justify-center`}
-            >
+<>
+{loading ? (
+        <Preloader />
+      ) : (
+        <>
+        <div className=" relative">
+          <div className="flex flex-row text-white">
+            <div className="w-1/2 h-[100vh] overflow-hiddenflex justify-center items-center">
+              {/* image  */}
+              {/* <Image
+                src=""
+                alt="bg-image"
+                className="w-full h-full object-cover"
+              ></Image> */}
+            </div>
+  
+            <div className="w-1/2 flex flex-col justify-center  bg-[#1D2135] relative">
+              <div
+                className={`bg-gray-800 ${otp} h-full w-full absolute flex-col items-center justify-center`}
+              >
+                <div className="flex flex-col items-center">
+                  <h1 className="text-[3rem] font-bold pb-8 text-white">
+                    Life <span className="text-[#897EEF]"> Hrfusion</span>
+                  </h1>
+                  <p className="text-[2.8rem] font-medium text-white">
+                    Verify Your Email
+                  </p>
+                  <p className="text-[1.2rem] text-white mb-10 mt-2 text-center">
+                    Enter the code sent to your email to complete <br /> your
+                    account setup.
+                  </p>
+                </div>
+                {/* input otp */}
+                <div className="">
+                  {/* <input
+                    className="bg-transparent w-12 h-12 outline-none border-2 border-gray-200 rounded-md"
+                    type="text"
+                  /> */}
+                  {otpinput.map((value, index) => (
+                    <input
+                      key={index}
+                      className="bg-transparent mr-4 focus:border-2 focus:border-[#897EEF] text-center text-white  w-12 h-12 outline-none border-2 border-gray-200 rounded-xl"
+                      type="text"
+                      ref={(el) => {
+                        refs.current[index] = el;
+                      }}
+                      // ref={refs[index]}
+                      value={otpArr[index]}
+                      onChange={(e) => handleOtpChange(e, index)}
+                      maxLength={1}
+                    />
+                  ))}
+                </div>
+  
+                <button
+                  onClick={Registeruser}
+                  className="text-gray-600 px-10 py-2 rounded-md bg-[#897EEF] mt-8"
+                >
+                  Submit
+                </button>
+                {error && <p className="text-red-500 mt-4">{error}</p>}
+              </div>
+  
               <div className="flex flex-col items-center">
-                <h1 className="text-[3rem] font-bold pb-8 text-white">
+                <h1 className="text-4xl font-bold pb-6">
                   Life <span className="text-[#897EEF]"> Hrfusion</span>
                 </h1>
-                <p className="text-[2.8rem] font-medium text-white">
-                  Verify Your Email
-                </p>
-                <p className="text-[1.2rem] text-white mb-10 mt-2 text-center">
-                  Enter the code sent to your email to complete <br /> your
-                  account setup.
-                </p>
+                <p className="text-[2.8rem] font-medium">Create an Account</p>
+                <p className="text-[1.2rem]">Please register to get started</p>
               </div>
-              {/* input otp */}
-              <div className="">
-                {/* <input
-                  className="bg-transparent w-12 h-12 outline-none border-2 border-gray-200 rounded-md"
-                  type="text"
-                /> */}
-                {otpinput.map((value, index) => (
+              <div className="flex items-center justify-center mt-8">
+                <form
+                  onSubmit={handleRegister}
+                  className="flex flex-col w-1/2 gap-4"
+                >
                   <input
-                    key={index}
-                    className="bg-transparent mr-4 focus:border-2 focus:border-[#897EEF] text-center text-white  w-12 h-12 outline-none border-2 border-gray-200 rounded-xl"
-                    type="text"
-                    ref={(el) => {
-                      refs.current[index] = el;
-                    }}
-                    // ref={refs[index]}
-                    value={otpArr[index]}
-                    onChange={(e) => handleOtpChange(e, index)}
-                    maxLength={1}
+                    name="name"
+                    type="Name"
+                    placeholder="Name"
+                    onChange={handleChange}
+                    className="input py-3 px-4 rounded-lg bg-[#272B43] text-gray-200"
                   />
-                ))}
+                  <input
+                    name="email"
+                    type="email"
+                    placeholder="Email"
+                    onChange={handleChange}
+                    className="input py-3 px-4 rounded-lg bg-[#272B43] text-gray-200"
+                  />
+                  <input
+                    name="password"
+                    type="password"
+                    placeholder="Password"
+                    onChange={handleChange}
+                    className="input py-3 px-4 rounded-lg bg-[#272B43] text-gray-200"
+                  />
+                  <p className="flex items-center justify-center text-gray-400 font-medium">
+                    Forgot Password?
+                  </p>
+                  <button
+                    type="submit"
+                    className="py-3 px-4 rounded-lg bg-[#897EEF] text-gray-800 font-medium"
+                  >
+                    Next
+                  </button>
+                  <p className="flex items-center justify-center text-gray-400 text-sm font-medium mt-8">
+                    Or Continue With
+                  </p>
+                  <button
+                    type="submit"
+                    onClick={handleGoogleLogin}
+                    className="py-3 px-4 rounded-lg bg-[#db5a5e] text-white font-medium"
+                  >
+                    Sign with Google
+                  </button>
+                  <p className="flex items-center justify-center text-gray-300 font-medium mt-4">
+                    Don&apos;t have an account ?&nbsp;
+                    <span className="text-[#897EEF]">
+                      <Link href="/auth/login">Login</Link>
+                    </span>
+                  </p>
+                  {error && <p className="text-red-500 mt-4">{error}</p>}
+                </form>
               </div>
-
-              <button
-                onClick={Registeruser}
-                className="text-gray-600 px-10 py-2 rounded-md bg-[#897EEF] mt-8"
-              >
-                Submit
-              </button>
-              {error && <p className="text-red-500 mt-4">{error}</p>}
-            </div>
-
-            <div className="flex flex-col items-center">
-              <h1 className="text-4xl font-bold pb-6">
-                Life <span className="text-[#897EEF]"> Hrfusion</span>
-              </h1>
-              <p className="text-[2.8rem] font-medium">Create an Account</p>
-              <p className="text-[1.2rem]">Please register to get started</p>
-            </div>
-            <div className="flex items-center justify-center mt-8">
-              <form
-                onSubmit={handleRegister}
-                className="flex flex-col w-1/2 gap-4"
-              >
-                <input
-                  name="name"
-                  type="Name"
-                  placeholder="Name"
-                  onChange={handleChange}
-                  className="input py-3 px-4 rounded-lg bg-[#272B43] text-gray-200"
-                />
-                <input
-                  name="email"
-                  type="email"
-                  placeholder="Email"
-                  onChange={handleChange}
-                  className="input py-3 px-4 rounded-lg bg-[#272B43] text-gray-200"
-                />
-                <input
-                  name="password"
-                  type="password"
-                  placeholder="Password"
-                  onChange={handleChange}
-                  className="input py-3 px-4 rounded-lg bg-[#272B43] text-gray-200"
-                />
-                <p className="flex items-center justify-center text-gray-400 font-medium">
-                  Forgot Password?
-                </p>
-                <button
-                  type="submit"
-                  className="py-3 px-4 rounded-lg bg-[#897EEF] text-gray-800 font-medium"
-                >
-                  Next
-                </button>
-                <p className="flex items-center justify-center text-gray-400 text-sm font-medium mt-8">
-                  Or Continue With
-                </p>
-                <button
-                  type="submit"
-                  onClick={handleGoogleLogin}
-                  className="py-3 px-4 rounded-lg bg-[#db5a5e] text-white font-medium"
-                >
-                  Sign with Google
-                </button>
-                <p className="flex items-center justify-center text-gray-300 font-medium mt-4">
-                  Don&apos;t have an account ?&nbsp;
-                  <span className="text-[#897EEF]">
-                    <Link href="/auth/login">Login</Link>
-                  </span>
-                </p>
-                {error && <p className="text-red-500 mt-4">{error}</p>}
-              </form>
             </div>
           </div>
         </div>
-      </div>
-    </>
+      </>
+      )}
+</>
   );
 }

@@ -129,6 +129,35 @@ const getEmployees = async (req, res) => {
   }
 };
 
+// @desc Update login user profile
+// @route PUT /profile/update
+// @access Private (User)
+const updatecuserProfile = async (req, res) => {
+  try {
+    const { id } = req.user;
+    console.log({ id });
+    const updateData = req.body;
+
+    let profile = await Profile.findOne({ userId:id });
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
+    profile = await Profile.findOneAndUpdate(
+      { userId:id },
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    res.json({ message: "Profile updated successfully", profile });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+
+
 // @desc Update profile
 // @route PUT /profile/:userId
 // @access Private (User)
@@ -175,12 +204,88 @@ const deleteProfile = async (req, res) => {
 };
 
 
+// @desc Update employee profile and user data
+// @route PUT /profile/employees/:userId
+// @access Private (User)
+// @desc Update employee profile and user data
+// @route PUT /profile/employees/:userId
+// @access Private (User)
+const updateEmployeecprofile = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const {
+      name,
+      email,
+      role,
+      avatar,
+      position,
+      department,
+      contactNumber,
+      dateOfBirth,
+      gender,
+      maritalStatus,
+      aadharCard,
+      panCard,
+      experience,
+      joinedDate
+    } = req.body;
+
+    // Find and update user data
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    user.name = name || user.name;
+    user.email = email || user.email;
+    user.role = role || user.role;
+    user.avatar = avatar || user.avatar;
+    await user.save();
+
+    // Find and update profile data
+    const profile = await Profile.findOne({ userId });
+    if (!profile) {
+      return res.status(404).json({ success: false, message: "Profile not found" });
+    }
+
+    profile.position = position || profile.position;
+    profile.department = department || profile.department;
+    profile.contactNumber = contactNumber || profile.contactNumber;
+    profile.dateOfBirth = dateOfBirth || profile.dateOfBirth;
+    profile.gender = gender || profile.gender;
+    profile.maritalStatus = maritalStatus || profile.maritalStatus;
+    profile.aadharCard = aadharCard || profile.aadharCard;
+    profile.panCard = panCard || profile.panCard;
+    profile.experience = experience !== undefined ? experience : profile.experience;
+    profile.joinedDate = joinedDate || profile.joinedDate;
+
+    await profile.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Employee profile and user data updated successfully",
+      user,
+      profile,
+    });
+  } catch (error) {
+    console.error("Error updating employee:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+};
+
+
 // Export controllers
 module.exports = {
+  updatecuserProfile,
   createProfile,
   getProfile,
   updateProfile,
   deleteProfile,
   getEmployees,
   getCurrentUserProfile,
+  updateEmployeecprofile
 };

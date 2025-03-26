@@ -45,7 +45,7 @@ const Profilecomp = ({profile}) => {
             </p>
             <div className="flex justify-evenly">
               <Link
-                href="/profile"
+                href="/profileedit"
                 className="border border-dashed border-gray-500 w-[40%] rounded-md h-10 justify-center items-center flex cursor-pointer"
               >
                 <button className=" cursor-pointer">Edit</button>

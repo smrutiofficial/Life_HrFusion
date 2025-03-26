@@ -280,15 +280,37 @@ const updateUser = async (req, res) => {
 // @access Private (Admin)
 const deleteUser = async (req, res) => {
   try {
-    const deletedUser = await User.findByIdAndDelete(req.params.userId);
-    if (!deletedUser)
-      return res.status(404).json({ message: "User not found" });
+    const { userId } = req.params;
 
-    res.json({ message: "User deleted successfully" });
+    // Check if the user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Delete associated records
+    await Profile.deleteOne({ userId });
+    await Payroll.deleteOne({ userId });
+    await Attendance.deleteOne({ userId });
+    await Leave.deleteOne({ userId });
+
+    // Delete the user
+    await User.deleteOne({ _id: userId });
+
+    res.status(200).json({
+      success: true,
+      message: "User and associated records deleted successfully",
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
+    console.error("Error deleting user:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
+    });
   }
 };
+
 
 // @desc Get all users
 // @route GET /users/all

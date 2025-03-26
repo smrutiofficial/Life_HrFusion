@@ -1,6 +1,10 @@
+"use client";
+
 // import Image from "next/image";
 import React from "react";
 import { FaPen } from "react-icons/fa";
+import { useRouter } from "next/navigation"; // ✅ Import useRouter
+import Image from "next/image";
 
 interface EPF {
   employeeContribution: number;
@@ -39,9 +43,10 @@ interface PayrollData {
 }
 
 interface PayrollTableProps {
-  userpayrole: PayrollData[]; // Expecting an array of PayrollData
+  userpayrole: PayrollData[];
+  modclobtn: boolean;
+  setModclobtn: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
 // Function to calculate total allowances
 const calculateTotalAllowances = (allowances: Allowance[]): number => {
   return allowances.reduce((total, allowance) => total + allowance.amount, 0);
@@ -53,13 +58,22 @@ const calculateTotalDeductions = (deductions: Deduction[]): number => {
 };
 
 // Function to calculate net salary
-const calculateNetSalary = (basicpay: number, allowances: Allowance[], deductions: Deduction[]): number => {
+const calculateNetSalary = (
+  basicpay: number,
+  allowances: Allowance[],
+  deductions: Deduction[]
+): number => {
   const totalAllowances = calculateTotalAllowances(allowances);
   const totalDeductions = calculateTotalDeductions(deductions);
   return basicpay + totalAllowances - totalDeductions;
 };
 
-const PayrollTable: React.FC<PayrollTableProps> = ({ userpayrole }) => {
+const PayrollTable: React.FC<PayrollTableProps> = ({
+  userpayrole,
+  modclobtn,
+  setModclobtn,
+}) => {
+  const router = useRouter();
   return (
     <div className="w-full">
       <table className="w-full border-collapse rounded-lg bg-[#363b58a0] shadow-md">
@@ -82,7 +96,11 @@ const PayrollTable: React.FC<PayrollTableProps> = ({ userpayrole }) => {
             const totalDeductions = calculateTotalDeductions(
               employee.deductions
             );
-            const netSalary = calculateNetSalary(employee.basicpay, employee.allowances, employee.deductions);
+            const netSalary = calculateNetSalary(
+              employee.basicpay,
+              employee.allowances,
+              employee.deductions
+            );
 
             return (
               <tr
@@ -91,12 +109,12 @@ const PayrollTable: React.FC<PayrollTableProps> = ({ userpayrole }) => {
               >
                 <td className="p-3 flex items-center space-x-3">
                   <div className="w-14 h-14 rounded-full mx-6 overflow-hidden relative">
-                    {/* <Image
-                    src={employee.image}
-                    alt={employee.name}
+                    <Image
+                    src={employee.image || "/images/user.jpg"}
+                    alt={employee.name || "alternative image"}
                     layout="fill"
                     className="w-full h-full rounded-full object-cover"
-                  /> */}
+                  />
                   </div>
                   <div>
                     <p className="font-semibold">{employee.userId.name}</p>
@@ -106,16 +124,16 @@ const PayrollTable: React.FC<PayrollTableProps> = ({ userpayrole }) => {
                   </div>
                 </td>
                 <td className="p-3 text-center">
-                ₹{employee.basicpay.toLocaleString()}
+                  ₹{employee.basicpay.toLocaleString()}
                 </td>
                 <td className="p-3 text-center">
-                ₹{totalAllowances.toLocaleString()}
+                  ₹{totalAllowances.toLocaleString()}
                 </td>
                 <td className="p-3 text-center text-red-300">
-                ₹{totalDeductions.toLocaleString()}
+                  ₹{totalDeductions.toLocaleString()}
                 </td>
                 <td className="p-3 text-center font-semibold text-green-200">
-                ₹{netSalary.toLocaleString()}
+                  ₹{netSalary.toLocaleString()}
                 </td>
                 <td className="p-3 text-center">
                   <span
@@ -129,7 +147,13 @@ const PayrollTable: React.FC<PayrollTableProps> = ({ userpayrole }) => {
                   </span>
                 </td>
                 <td className="p-3 text-center space-x-4">
-                  <button className="text-white hover:text-gray-300">
+                  <button
+                    onClick={() => {
+                      setModclobtn(true);
+                      router.push(`/payroll?id=${employee.userId._id}`);
+                    }}
+                    className="text-white hover:text-gray-300 cursor-pointer"
+                  >
                     <FaPen />
                   </button>
                   <button className="text-white hover:text-gray-300">⋮</button>

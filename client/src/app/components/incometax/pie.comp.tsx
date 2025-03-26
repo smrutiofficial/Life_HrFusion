@@ -42,42 +42,46 @@ const renderLabel = ({ name }) => name;
       <h2 className="text-lg font-semibold mb-4">Tax Summary</h2>
       <div className="space-y-2">
         <div className="flex justify-between">
-          <span className="text-gray-400">Gross Income</span>
-          <span className="font-semibold">₹{taxData?.basicPay}</span>
+          <span className="text-gray-400 text-sm">Annual Income</span>
+          <span className="font-semibold text-sm">₹ {taxData?.basicPay}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-gray-400">Total Deductions</span>
-          <span className="font-semibold">₹{taxData?.deductions}</span>
+          <span className="text-gray-400 text-sm">Total Deductions</span>
+          <span className="text-sm text-gray-400">₹ {taxData?.deductions}</span>
         </div>
         <div className="flex justify-between text-lg">
-          <span className="text-gray-400">Total Allowances</span>
-          <span className="font-bold ">₹{taxData?.allowances}</span>
+          <span className="text-gray-400 text-sm">Total Allowances</span>
+          <span className="text-sm  text-gray-400">₹ {taxData?.allowances}</span>
         </div>
       </div>
       <div className="mt-4 border-t border-gray-700 pt-4">
         <div className="flex justify-between text-lg pb-2">
-          <span className="text-gray-400">Gross Income</span>
-          <span className="text-gray-400">₹{taxResult?.grossIncome}</span>
+          <span className="text-gray-400 text-sm">Gross Income</span>
+          <span className="text-gray-400 text-sm">₹ {taxResult?.grossIncome}</span>
         </div>
         <div className="flex justify-between text-lg pb-2">
-          <span className="text-gray-400">Taxable Income</span>
-          <span className="text-gray-400">₹{taxResult?.taxableIncome}</span>
+          <span className="text-gray-400 text-sm">Standand Deduction</span>
+          <span className="text-red-300 text-sm">- ₹ 75000</span>
         </div>
         <div className="flex justify-between text-lg pb-2">
-          <span className="text-gray-400">Tax Amount</span>
-          <span className="text-gray-400">₹{taxResult?.taxAmount}</span>
+          <span className="text-gray-400 text-sm">Taxable Income</span>
+          <span className="text-gray-400 text-sm">₹ {taxResult?.taxableIncome}</span>
         </div>
         <div className="flex justify-between text-lg pb-2">
-          <span className="text-gray-400">cess</span>
-          <span className="text-gray-400">₹{taxResult?.cess}</span>
+          <span className="text-gray-400 text-sm">Tax Amount</span>
+          <span className="text-gray-400 text-sm">₹ {taxResult?.taxAmount}</span>
         </div>
         <div className="flex justify-between text-lg pb-2">
-          <span className="text-gray-400">Final Tax</span>
-          <span className="font-bold">₹{taxResult?.finalTax}</span>
+          <span className="text-gray-400 text-sm">cess</span>
+          <span className="text-gray-400 text-sm">₹ {taxResult?.cess}</span>
+        </div>
+        <div className="flex justify-between text-lg pb-2">
+          <span className="text-gray-400 text-sm">Final Tax</span>
+          <span className="font-bold">₹ {taxResult?.finalTax}</span>
         </div>
         <div className="flex justify-between text-sm text-gray-400">
           <span>Rebate under Section 87A</span>
-          <span>₹0</span>
+          <span>₹ 0</span>
         </div>
       </div>
       <div className="mt-8">

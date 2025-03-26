@@ -38,7 +38,7 @@ const Dashboard = () => {
     };
 
     fetchUserData();
-  }, [userData]); // Run only once on component mount
+  }, []); // Run only once on component mount
 
   return (
     <>

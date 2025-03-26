@@ -24,7 +24,7 @@ router.post("/verify-email", verifyEmail);
 
 // Protected Routes
 router.put("/update/:userId", authenticate, updateUser);
-router.delete("/delete/:userId", authenticate, authorize(["admin"]), deleteUser);
+router.delete("/delete/:userId", authenticate, deleteUser);
 router.get("/all", authenticate, authorize(["admin"]), getAllUsers);
 
 module.exports = router;

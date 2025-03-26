@@ -39,6 +39,7 @@ const Securitycomp = ({profile}) => {
           <div className="relative">
             <input
               type="text"
+              disabled
               value={isAadharVisible ? formatNumber(profile.aadharCard) : maskNumber(profile.aadharCard)}
               className="w-full mt-1 py-3 px-5 bg-[#363B58] text-white rounded-md tracking-widest"
               readOnly
@@ -62,6 +63,7 @@ const Securitycomp = ({profile}) => {
           <div className="relative">
             <input
               type="text"
+              disabled
               value={isPanVisible ? formatNumber(profile.panCard) : maskNumber(profile.panCard)}
               className="w-full mt-1 py-3 px-5 bg-[#363B58] text-white rounded-md tracking-widest"
               readOnly

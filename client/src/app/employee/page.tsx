@@ -9,8 +9,10 @@ import Pagination from "../components/Pagination.comp";
 import { IoMdAdd } from "react-icons/io";
 import axios from "axios";
 import { backend_link } from "../constants/constant";
+import UserDetails from "../components/userupdatedesign.comp";
 
 interface Employee {
+  id: string;
   name: string;
   role: string;
   contactNumber: string;
@@ -21,8 +23,7 @@ interface Employee {
 }
 
 const Employee = () => {
-
-const [userData, setUserData] = useState<Employee[]>([]);
+  const [userData, setUserData] = useState<Employee[]>([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -33,16 +34,27 @@ const [userData, setUserData] = useState<Employee[]>([]);
             token: `${token}`, // Attach token in Authorization header
           },
         });
-        setUserData(response.data); // Set user data
-        console.log(userData);
+
+        // Extract necessary data from the API response
+        const formattedData = response.data.map((employee: any) => ({
+          id: employee.userId?._id || "N/A",
+          name: employee.userId?.name || "N/A",
+          role: employee.userId?.role || "N/A",
+          contactNumber: employee.contactNumber || "N/A",
+          department: employee.department || "N/A",
+          email: employee.userId?.email || "N/A",
+          status: employee.status || "inactive",
+          imageUrl: employee.imageUrl || "/images/user.jpg",
+        }));
+
+        setUserData(formattedData); // Set the formatted user data
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     };
 
     fetchUserData();
-  }, [userData]); // Run only once on component mount
-
+  }, []); // Run only once on component mount
 
   const [selectedDepartment, setSelectedDepartment] = useState("");
 
@@ -62,8 +74,22 @@ const [userData, setUserData] = useState<Employee[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const resultsPerPage = 10;
   const totalResults = 97;
+
+  const [infobtn, setInfobtn] = useState(false); // show employee details
+
   return (
     <>
+      <div
+        className={`bg-[rgba(137,126,239,0.5)] h-screen w-screen absolute z-10 ${
+          infobtn == true ? "flex" : "hidden"
+        } justify-center items-center`}
+      >
+        <div className="bg-[#1D2135] w-[96%] h-[98%] relative overflow-scroll ">
+          <UserDetails infobtn={infobtn} setInfobtn={setInfobtn} />
+        </div>
+      </div>
+
+      {/* ___________________________________________________________________ */}
       <Bgcomp />
 
       {/* section */}
@@ -78,7 +104,6 @@ const [userData, setUserData] = useState<Employee[]>([]);
             <p className="">Employees_Managemet</p>
           </div>
         </div>
-     
 
         {/* border */}
         <div className="h-[8%] flex items-center my-4">
@@ -93,7 +118,7 @@ const [userData, setUserData] = useState<Employee[]>([]);
           </div>
           <div className="w-[20%] px-14">
             <div className="w-full bg-[#1D2135] border border-gray-400 flex justify-center items-center h-12 gap-4">
-            <IoMdAdd className="text-gray-300"/>
+              <IoMdAdd className="text-gray-300" />
               <p className="text-gray-300">Add Employee</p>
             </div>
           </div>
@@ -143,11 +168,19 @@ const [userData, setUserData] = useState<Employee[]>([]);
           </div>
         </div>
         {/* employees ................---------------------------- */}
-      
 
         <div className="px-12 flex flex-row flex-wrap gap-4 py-4">
           {userData.map((employee, index) => (
-            <EmployeeCard key={index} {...employee} />
+            <EmployeeCard
+              key={index}
+              id={employee.id} // Pass user ID
+              {...employee}
+              infobtn={infobtn}
+              setInfobtn={setInfobtn}
+            />
+
+            // <EmployeeCard  key={index} {...employee} infobtn={infobtn}
+            // setInfobtn={setInfobtn} />
           ))}
         </div>
         {/* ---------------------------------------- */}

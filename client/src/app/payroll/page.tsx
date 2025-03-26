@@ -11,6 +11,7 @@ import PayrollTable from "../components/payrolltable.comp";
 import axios from "axios";
 import { backend_link } from "../constants/constant";
 import Preloader from "../components/preload.comp";
+import PayrollPage from "../components/payroll/updatepayroll.comp";
 
 const Payroll = () => {
   const [loading, setLoading] = useState(true);
@@ -59,12 +60,34 @@ const Payroll = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const resultsPerPage = 10;
   const totalResults = 97;
+
+  const [modclobtn, setModclobtn] = useState(false);
   return (
     <>
       {loading ? (
         <Preloader />
       ) : (
         <>
+          <div
+            className={`absolute w-screen h-screen z-10 ${
+              modclobtn == true ? "flex" : "hidden"
+            } justify-center items-center`}
+          >
+            <div className="w-full h-full backdrop-blur-lg bg-[#6455EB]/50 absolute"></div>
+            <div className="w-[72%] h-[82%] bg-[#1D2135] relative rounded-2xl overflow-scroll">
+              <Link
+                href="/payroll"
+                className="absolute right-0 mr-12 mt-12 bg-[#EB6B6B] py-2 px-6 rounded-sm cursor-pointer"
+              >
+                <button onClick={() => setModclobtn(false)} className=" ">
+                  Close
+                </button>
+              </Link>
+              <PayrollPage />
+            </div>
+          </div>
+
+          {/* ------------------------------------------------------- */}
           <Bgcomp />
 
           {/* section */}
@@ -129,7 +152,11 @@ const Payroll = () => {
             {/* employees ................---------------------------- */}
 
             <div className="px-12 flex flex-row flex-wrap gap-8.5 py-2">
-              <PayrollTable userpayrole={userData} />
+              <PayrollTable
+                userpayrole={userData}
+                modclobtn={modclobtn}
+                setModclobtn={setModclobtn}
+              />
             </div>
             {/* ---------------------------------------- */}
             <hr className="text-gray-400 my-10 mx-14" />

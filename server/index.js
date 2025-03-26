@@ -19,6 +19,7 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: "http://localhost:3000", // ✅ Set your frontend URL
+    // origin: "http://192.168.51.97:3000", // ✅ Set your frontend URL
     credentials: true, // ✅ Allow cookies
   })
 );

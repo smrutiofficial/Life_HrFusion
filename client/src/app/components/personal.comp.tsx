@@ -48,7 +48,8 @@ const Personalcomp = ({profile}) => {
             value={profile.email}
             onChange={handleChange}
             placeholder="example@xyz.com"
-            className="w-full mt-1 py-4 px-6 bg-[#363B58] rounded-md mb-2"
+            disabled
+            className="w-full mt-1 py-4 px-6 bg-[#363B58] rounded-md mb-2 outline-none"
             required
           />
         </div>
@@ -64,6 +65,7 @@ const Personalcomp = ({profile}) => {
             name="phone"
             value={profile.contactNumber}
             onChange={handleChange}
+            disabled
             className="w-full mt-1 py-4 px-6 bg-[#363B58] rounded-md mb-2"
             pattern="[0-9]{10,12}"
             placeholder="+91 9861 955 265"
@@ -82,6 +84,7 @@ const Personalcomp = ({profile}) => {
             name="dob"
             value={profile?.dateOfBirth ? new Date(profile.dateOfBirth).toISOString().split("T")[0] : ""}
             onChange={handleChange}
+            disabled
             className="w-full mt-1 py-4 px-6 bg-[#363B58] rounded-md mb-2"
             required
           />
@@ -97,6 +100,7 @@ const Personalcomp = ({profile}) => {
             name="gender"
             value={profile.gender}
             onChange={handleChange}
+            disabled
             className="w-full mt-1 py-4 px-6 bg-[#363B58] rounded-md mb-2"
             required
           >
@@ -117,6 +121,7 @@ const Personalcomp = ({profile}) => {
             name="maritalStatus"
             value={profile.maritalStatus}
             onChange={handleChange}
+            disabled
             className="w-full mt-1 py-4 px-6 bg-[#363B58] rounded-md"
             required
           >

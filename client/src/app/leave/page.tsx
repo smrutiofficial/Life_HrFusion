@@ -1,41 +1,59 @@
-import React from "react";
+"use client"
+import React, { useEffect, useState } from "react";
 import Bgcomp from "../components/bg.comp";
 import Logocomp from "../components/logo.comp";
 import Link from "next/link";
 import LeaveSummary from "../components/leave/leavesummry.comp";
 import LeaveRequestForm from "../components/leave/fileuploade.comp";
 import RecentRequests from "../components/leave/recentreq.com";
+import Preloader from "../components/preload.comp";
 
 const Leave = () => {
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 2000); // Simulate loading time
+    return () => clearTimeout(timer);
+  }, []);
   return (
     <>
-      <Bgcomp />
-      <section className="w-[100%] h-[100%] overflow-scroll">
-        <div className="flex items-end">
-          <Logocomp />
-          <div className="flex gap-3 pb-2">
-            <Link href="/">
-              <p className="text-gray-400">Dashboard</p>
-            </Link>
-            <p className="text-gray-400">&gt;</p>
-            <p className="">Leave_Management</p>
+    
+    {loading ? (
+        <Preloader />
+      ) : (
+
+        <>
+        <Bgcomp />
+        <section className="w-[100%] h-[100%] overflow-scroll">
+          <div className="flex items-end">
+            <Logocomp />
+            <div className="flex gap-3 pb-2">
+              <Link href="/">
+                <p className="text-gray-400">Dashboard</p>
+              </Link>
+              <p className="text-gray-400">&gt;</p>
+              <p className="">Leave_Management</p>
+            </div>
           </div>
-        </div>
-        {/* --------------------------------------------- */}
-        <div className="px-13 py-4">
-          <LeaveSummary />
-        </div>
-        {/* ----------- */}
-        <div className="w-full flex h-fit">
-          <div className="w-[68.5%] px-13">
-            <LeaveRequestForm/>
+          {/* --------------------------------------------- */}
+          <div className="px-13 py-4">
+            <LeaveSummary />
           </div>
-          <div className="w-[31.5%] pr-4">
-          <RecentRequests/>
+          {/* ----------- */}
+          <div className="w-full flex h-fit">
+            <div className="w-[68.5%] px-13">
+              <LeaveRequestForm/>
+            </div>
+            <div className="w-[31.5%] pr-4">
+            <RecentRequests/>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </>
+      )}
     </>
+ 
   );
 };
 

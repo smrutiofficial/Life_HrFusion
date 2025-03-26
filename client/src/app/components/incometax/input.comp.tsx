@@ -68,7 +68,7 @@ const TaxForm = ({ onTaxDataChange }) => {
                 onChange={handleChange}
                 className="w-full py-4 px-10 bg-[#363B58] rounded"
               >
-                <option>2023-24</option>
+                {/* <option>2023-24</option> */}
                 <option>2024-25</option>
               </select>
             </div>
