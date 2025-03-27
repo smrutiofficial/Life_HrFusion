@@ -2,16 +2,19 @@ const Leave = require("../models/Leave.model");
 const User = require("../models/Users.model");
 const Profile = require("../models/Profile.model");
 
+
+
+
 // Add a new leave request by userId
 const addNewReqById = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const { id } = req.user;
     const { leaveType, startDate, endDate, reason } = req.body;
 
-    let leave = await Leave.findOne({ userId });
+    let leave = await Leave.findOne({ userId:id });
 
     if (!leave) {
-      leave = new Leave({ userId, leaves: [] });
+      leave = new Leave({ userId:id, leaves: [] });
     }
 
     const newLeaveRequest = {
@@ -25,7 +28,6 @@ const addNewReqById = async (req, res) => {
 
     leave.leaves.push(newLeaveRequest);
     await leave.save();
-
     res
       .status(201)
       .json({ message: "Leave request added successfully", leave });
@@ -36,21 +38,20 @@ const addNewReqById = async (req, res) => {
 
 const getAllReqById = async (req, res) => {
   try {
-    const { userId } = req.params;
-
-    const leave = await Leave.findOne({ userId })
-      .populate({
-        path: "userId",
-        select: "name email", // Fetch only name and email from User model
-        model: User
-      })
-      .populate({
-        path: "userId",
-        populate: {
-          path: "profile",
-          model: Profile
-        },
-      });
+    const { id } = req.user;
+    const leave = await Leave.findOne({ userId:id })
+      // .populate({
+      //   path: "userId",
+      //   select: "name email", // Fetch only name and email from User model
+      //   model: User
+      // })
+      // .populate({
+      //   path: "userId",
+      //   populate: {
+      //     path: "profile",
+      //     model: Profile
+      //   },
+      // });
 
     if (!leave || leave.leaves.length === 0) {
       return res.status(404).json({ message: "No leave records found" });

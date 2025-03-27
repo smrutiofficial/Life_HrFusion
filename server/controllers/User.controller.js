@@ -203,27 +203,66 @@ const registerUser = async (req, res) => {
   }
 };
 
-// @desc Authenticate user & get JWT token
-// @route POST /api/login
-// @access Public
+// // @desc Authenticate user & get JWT token
+// // @route POST /api/login
+// // @access Public
+// const loginUser = async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+//     const user = await User.findOne({ email });
+//     if (!user) return res.status(401).json({ message: "Invalid email" });
+
+//     const isPasswordValid = await bcrypt.compare(password, user.password);
+//     if (!isPasswordValid)
+//       return res.status(401).json({ message: "Invalid password" });
+
+//     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+//       expiresIn: "7d",
+//     });
+//     res.cookie("token", token, {
+//       httpOnly: true,
+//       secure: false,
+//       sameSite: "strict",
+//       maxAge: 7 * 24 * 60 * 60 * 1000,
+//     });
+
+//     res.json({ success: true, message: "Login successful", token });
+//   } catch (error) {
+//     res.status(500).json({ message: "Server Error", error: error.message });
+//   }
+// };
+
+
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    // Find user by email
     const user = await User.findOne({ email });
+
     if (!user) return res.status(401).json({ message: "Invalid email" });
 
+    // Check if the user's role is "admin"
+    if (user.role !== "admin") {
+      return res.status(403).json({ message: "Access denied. Admins only." });
+    }
+
+    // Validate password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid)
       return res.status(401).json({ message: "Invalid password" });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    // Generate JWT token
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
+
+    // Set token in HTTP-only cookie
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     res.json({ success: true, message: "Login successful", token });
@@ -231,6 +270,7 @@ const loginUser = async (req, res) => {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
+
 
 // @desc logout user
 // @route

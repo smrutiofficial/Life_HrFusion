@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {backend_link} from "@/app/constants/constant";
 import Preloader from "@/app/components/preload.comp";
+import Image from "next/image";
 
 export default function Login() {
 
@@ -60,9 +61,9 @@ export default function Login() {
         <>
         <div>
           <div className="flex flex-row">
-            <div className="w-1/2 h-[100vh] overflow-hidden bg-[#10121f] flex justify-center items-center">
+            <div className="w-1/2 h-[100vh] overflow-hidden bg-[#10121f] flex justify-center items-center relative">
               {/* image  */}
-              {/* <Image src="" alt="bg-image" className="h-full w-full object-cover"></Image> */}
+              {/* <Image src="/images/bg.png" layout="fill" alt="bg-image" className="h-full w-full object-cover"></Image> */}
             </div>
             <div className="w-1/2 flex flex-col justify-center bg-[#1D2135]">
               <div className="flex flex-col items-center">

@@ -6,7 +6,6 @@ import { MdDelete } from "react-icons/md";
 import { RiEdit2Fill } from "react-icons/ri";
 import { useRouter } from "next/navigation";
 
-
 interface EmployeeCardProps {
   id: string; // Add this
   name: string;
@@ -16,7 +15,7 @@ interface EmployeeCardProps {
   email: string;
   status: "active" | "inactive";
   imageUrl: string;
-  infobtn:boolean;
+  infobtn: boolean;
   setInfobtn: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -30,9 +29,8 @@ const EmployeeCard: React.FC<EmployeeCardProps> = ({
   status,
   imageUrl,
   infobtn,
-  setInfobtn
+  setInfobtn,
 }) => {
-
   const router = useRouter();
   // const [infobtn,setInfobtn]=useState(false);
   const viewprofile = () => {
@@ -43,7 +41,7 @@ const EmployeeCard: React.FC<EmployeeCardProps> = ({
 
   return (
     <>
-    {/* __________________________________________________________ */}
+      {/* __________________________________________________________ */}
       <div className="relative bg-[#1E2133] text-white py-8 px-12 border border-gray-700 w-[444px] shadow-lg flex flex-col gap-4">
         {/* Header */}
         <div className="flex items-center gap-4">
@@ -88,14 +86,14 @@ const EmployeeCard: React.FC<EmployeeCardProps> = ({
 
         {/* Buttons */}
         <div className="flex justify-end pt-2 items-center gap-4">
-          <button className="text-white border py-2 w-[50%] rounded-lg bg-[#363B58] border-gray-500 flex gap-4 justify-center items-center cursor-pointer">
+          <button
+            onClick={viewprofile}
+            className="text-white border py-2 w-[50%] rounded-lg bg-[#363B58] border-gray-500 flex gap-4 justify-center items-center cursor-pointer"
+          >
             <RiEdit2Fill />
             Edit
           </button>
-          <button
-            onClick={viewprofile}
-            className="bg-[#897EEF] text-white w-[50%] py-2 rounded-md flex gap-4 justify-center items-center cursor-pointer"
-          >
+          <button className="bg-[#897EEF] text-white w-[50%] py-2 rounded-md flex gap-4 justify-center items-center cursor-pointer">
             <HiMiniViewfinderCircle />
             View
           </button>

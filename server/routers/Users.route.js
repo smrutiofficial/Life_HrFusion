@@ -10,7 +10,11 @@ const {
   requestPasswordReset,
   verifyEmail,
 } = require("../controllers/User.controller.js");
-const { authenticate, authorize } = require("../middlewares/auth.middleware.js"); // Protect routes
+const {
+  authenticate,
+  authorize,
+} = require("../middlewares/auth.middleware.js"); // Protect routes
+const { getUserStats } = require("../controllers/status.controller.js");
 
 const router = express.Router();
 
@@ -26,5 +30,6 @@ router.post("/verify-email", verifyEmail);
 router.put("/update/:userId", authenticate, updateUser);
 router.delete("/delete/:userId", authenticate, deleteUser);
 router.get("/all", authenticate, authorize(["admin"]), getAllUsers);
+router.get("/status", getUserStats);
 
 module.exports = router;

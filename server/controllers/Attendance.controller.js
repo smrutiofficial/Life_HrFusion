@@ -55,6 +55,45 @@ const getTodayAttendanceById = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+// -----------------------------------------------------------------------------------
+
+// Get today's attendance by userId
+const getTodayAttendance = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const today = new Date().toISOString().split("T")[0];
+
+    const attendance = await Attendance.findOne({ userId: id })
+      .populate({
+        path: "userId",
+        select: "name email hrmsId username avatar",
+        model: User,
+      })
+      .populate({
+        path: "userId",
+        populate: { path: "profile", model: Profile },
+      });
+
+    if (!attendance) {
+      return res.status(404).json({ message: "Attendance record not found" });
+    }
+
+    const record = attendance.attendance.find(
+      (record) => record.date.toISOString().split("T")[0] === today
+    );
+    if (!record) {
+      return res
+        .status(404)
+        .json({ message: "No attendance record found for today" });
+    }
+
+    res.status(200).json(record);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// -----------------------------------------------------------------------------------
 
 // Update check-in time, location, and set status to 'Present' for the current date
 const updateCheckIn = async (req, res) => {
@@ -66,6 +105,47 @@ const updateCheckIn = async (req, res) => {
     let attendance = await Attendance.findOne({ userId });
     if (!attendance) {
       attendance = new Attendance({ userId, attendance: [] });
+    }
+
+    let record = attendance.attendance.find(
+      (record) => record.date.toISOString().split("T")[0] === today
+    );
+
+    if (!record) {
+      record = {
+        date: new Date(),
+        checkIn,
+        location,
+        status: "Present",
+        checkOut: null, // Default checkOut value
+      };
+      attendance.attendance.push(record);
+    } else {
+      record.checkIn = checkIn;
+      record.location = location;
+      record.status = "Present";
+      record.checkOut = null;
+    }
+
+    await attendance.save();
+    res
+      .status(200)
+      .json({ message: "Check-in time updated successfully", attendance });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Update check-in time, location, and set status to 'Present' for the current date
+const updateCheckInme = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const { checkIn, location } = req.body; // No checkOut here
+    const today = new Date().toISOString().split("T")[0];
+
+    let attendance = await Attendance.findOne({ userId: id });
+    if (!attendance) {
+      attendance = new Attendance({ userId: id, attendance: [] });
     }
 
     let record = attendance.attendance.find(
@@ -129,9 +209,44 @@ const updateCheckOut = async (req, res) => {
   }
 };
 
+// Update check-out time for the current date
+const updateCheckOutme = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const { checkOut } = req.body;
+    const today = new Date().toISOString().split("T")[0];
+
+    const attendance = await Attendance.findOne({ userId: id });
+    if (!attendance) {
+      return res.status(404).json({ message: "Attendance record not found" });
+    }
+
+    const record = attendance.attendance.find(
+      (record) => record.date.toISOString().split("T")[0] === today
+    );
+    if (!record) {
+      return res
+        .status(404)
+        .json({ message: "No attendance record found for today" });
+    }
+
+    record.checkOut = checkOut;
+
+    await attendance.save();
+    res
+      .status(200)
+      .json({ message: "Check-out time updated successfully", attendance });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 module.exports = {
   getAttendanceById,
   getTodayAttendanceById,
+  getTodayAttendance,
+  updateCheckInme,
+  updateCheckOutme,
   updateCheckIn,
   updateCheckOut,
 };

@@ -110,7 +110,7 @@ const Profile = () => {
                     href="/profileedit"
                     className="bg-[#363B58] text-[#9198C2] px-14 rounded-md py-4 cursor-pointer flex justify-center items-center gap-4"
                   >
-                    <button className="">
+                    <button className="flex justify-center items-center gap-4">
                       <MdEdit className="text-[#]" />
                       Edit Profile
                     </button>

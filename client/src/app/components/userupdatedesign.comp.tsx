@@ -105,7 +105,7 @@ const UserDetails = ({
   };
 
   return (
-    <div className="w-full bg-gray-900 text-white p-8 flex justify-center relative">
+    <div className="w-full bg-[#1D2135] text-white p-8 flex justify-center relative">
       <div
         onClick={closebtn}
         className="absolute right-0 px-6 py-2 bg-[#EB6B6B] transform -translate-x-12 cursor-pointer rounded-md"
@@ -231,7 +231,7 @@ const UserDetails = ({
         <div className="flex justify-end mt-12">
           <button
             onClick={handleSaveChanges}
-            className="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg font-medium flex items-center"
+            className="bg-[#897EEF] hover:bg-[#655dac] px-12 py-4 rounded-lg font-medium flex items-center"
           >
             Save Changes
           </button>
@@ -264,7 +264,7 @@ function Input({
         name={name}
         value={value}
         onChange={onChange}
-        className="w-full bg-gray-700 text-white p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+        className="w-full bg-[#363B58] py-4 text-white p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
       />
     </div>
   );

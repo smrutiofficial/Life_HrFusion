@@ -61,7 +61,7 @@ export default function DashboardNotifications() {
   return (
     <div className="px-4 py-6 flex flex-col gap-6 relative h-[99%]">
       {/* Inbox Section */}
-      <div className="bg-[#1D2135] py-6 px-4 rounded-xl border h-[30%] border-gray-600 overflow-scroll">
+      <div className="bg-[#1D2135] py-6 px-4 rounded-xl border h-[34%] border-gray-600 overflow-scroll">
         <div className="flex gap-4 items-center mb-4 px-2">
           <h2 className="text-white font-semibold text-lg">Inbox</h2>
           <span className="bg-[#EB6B6B] text-white text-xs h-5 w-5 flex justify-center items-center rounded-full">
@@ -115,7 +115,7 @@ export default function DashboardNotifications() {
       </div>
 
       {/* Announcements Section */}
-      <div className="bg-[#1D2135] py-7 px-4 rounded-xl border h-[70%] border-gray-600 overflow-scroll">
+      <div className="bg-[#1D2135] py-7 px-4 rounded-xl border h-[66%] border-gray-600 overflow-scroll">
         {/* <h2 className="text-white font-semibold text-lg pl-2 mb-4">Announcements
           </h2> */}
         <div className="flex gap-4 items-center mb-4 px-2">
