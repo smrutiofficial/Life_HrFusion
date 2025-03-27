@@ -105,7 +105,7 @@ const Dashboard = () => {
         </div>
       </div>
       {/* -------------notifications -----------*/}
-      <div className="w-[25%]" style={{ height: "calc(100vh - 15%)" }}>
+      <div className="w-[25%] py-2 mt-2.5" style={{ height: "calc(100vh - 17%)" }}>
         {/* border */}
         <Notificationcomp />
       </div>

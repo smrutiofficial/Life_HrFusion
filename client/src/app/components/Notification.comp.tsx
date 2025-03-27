@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const Notificationcomp = () => {
   return (
-    <div>
+    <div className="h-full">
       <div className="flex justify-between items-center px-4">
         <p className="text-xl font-semibold ">Notification</p>
         <Link href="/notification">

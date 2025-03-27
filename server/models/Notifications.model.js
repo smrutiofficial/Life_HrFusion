@@ -9,15 +9,19 @@ const notificationSchema = new mongoose.Schema(
     },
     recipients: {
       type: String,
-      enum: ["all_employees", "all_hrs", "everyone"],
+      enum: ["employees", "hrs", "admin", "everyone"],
       required: true,
     },
-    specificEmployees: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User", // Specific users receiving the notification
-      },
-    ],
+    // specificEmployees: [
+    //   {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "User", // Specific users receiving the notification
+    //   },
+    // ],
+    tittle: {
+      type: String,
+      required: true,
+    },
     message: {
       type: String,
       required: true,
